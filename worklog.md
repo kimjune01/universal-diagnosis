@@ -413,8 +413,49 @@ This is exactly what Peters' framework enables: same node set, different test op
 - Pass condition: PUL v2.0 total score statistically significant
 - Outcome: HIT (known)
 
+## 2026-03-20: Speculative territory (not in prereg)
+
+### Observation: read_outcomes recurrence → vol arbitrage
+
+The CAPR event-based diagnosis surfaced a disagreement on trauma recurrence. Consolidate-A says no (different scientific failure classes). Consolidate-B says yes (same communication failure class — management overreads ambiguous data, FDA disagrees, management acts surprised).
+
+The communication recurrence is a pattern:
+1. Data comes in ambiguous
+2. Management reads it as unambiguously positive
+3. Regulator disagrees
+4. Management acts surprised
+
+This happened with HOPE-2 → CRL. The read_outcomes pipe was never repaired — only write_substrate was fixed (they ran a proper trial). The interpretation habit persists.
+
+### Implication: the framework predicts vol mispricing
+
+If management systematically overframes, then:
+- Market expectations are inflated by management's narrative (IV calibrated to management's framing)
+- Any ambiguous outcome produces a larger surprise than the market expects
+- Realized vol > implied vol around catalyst dates
+
+This is not a directional prediction (PASS/FAIL). It's a prediction about the *gap between expectation and reality* — which is what vol prices.
+
+### Testable hypothesis (future work, not this pilot)
+
+"Companies with broken read_outcomes pipes (recurring management overframing) have higher realized-to-implied vol ratios around catalyst dates than companies with functional read_outcomes pipes."
+
+This is falsifiable across a portfolio using historical options data. CAPR data points:
+- CRL (Jul 2025): management said "no deficiencies" at mid-cycle. Stock cratered. Check realized vs implied.
+- HOPE-3 (Dec 2025): management said it would work. It did. Stock +440%. Check realized vs implied.
+- Shkreli short (Nov 2025): stock -17% on a tweet. Was that priced in?
+
+### Secondary prediction candidate (CAPR PDUFA Aug 22 2026)
+
+"If the August 22 PDUFA results in anything other than clean approval, Capricor's press release will frame it more favorably than the FDA's actual letter."
+
+Falsifiable, binary, mechanically scorable (compare press release to FDA letter). But conditional — void if clean approval. Not added to prereg for this pilot. Logged for potential Run 2.
+
+### Why this matters for the framework
+
+The framework's value-add isn't just PASS/FAIL on catalysts. It's diagnosing *which pipe is broken* and predicting the consequences of the specific break. A broken read_outcomes pipe doesn't mean the drug fails — it means the company's self-assessment is unreliable, which makes the market's information about the company's information wrong. That's a second-order prediction no analyst framework produces.
+
 **Next:**
-- Commit all CAPR Run 0 artifacts
 - Complete QURE Run 0
 - Freeze commit
 - Run 1: SPRB, ATYR, INMB
