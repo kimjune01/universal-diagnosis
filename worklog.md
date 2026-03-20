@@ -103,6 +103,91 @@ Decided to go head-to-head with Martin Shkreli's public biotech positions from 2
 
 All verified working. DB initialized with 5 companies, 2 traumas embedded, scorecard empty and waiting.
 
+### Research protocol: semiblind-semiblind merge
+
+The diagnosis research itself uses the framework's Attend step — diverse selection with redundancy control.
+
+**Architecture**: 2×2 Claude subagents for search, 2 codex instances for merge.
+
+**Search layer (4 Claude subagents, run in parallel):**
+
+| Instance | Search angle | Primary data source |
+|---|---|---|
+| Cache-A | Forward pass probes: is the molecule's pipeline broken? | ClinicalTrials.gov, PubMed |
+| Cache-B | Forward pass probes: same angle, independent search | SEC EDGAR, financial media |
+| Consolidate-A | Backward pass probes: is the company learning? | FDA letters, trial amendments |
+| Consolidate-B | Backward pass probes: same angle, independent search | Conference presentations, analyst reports |
+
+- **Semi-blind**: all agents share the framework vocabulary (six roles, two stacks, probe language) but don't see each other's findings during search.
+- **Stochastic**: agents start from different data sources so they don't converge on the same evidence. The diversity is in the entry point, not the lens.
+- **2 instances per angle**: if both Cache agents find the same evidence independently, it's high-confidence signal. If they diverge, the divergence itself is diagnostic.
+
+**Attend (top-2 selection):**
+- From the 4 agent outputs, select the top 2 based on evidence quality, novelty, and internal consistency.
+- The other 2 are discarded — they served as diversity insurance during search. If they found nothing the top 2 missed, the search was thorough enough.
+
+**Merge layer (2 codex instances, independent):**
+
+| Instance | Input | Job |
+|---|---|---|
+| Codex-A | Top 2 agent outputs | Merge into single SOAP note with refs |
+| Codex-B | Top 2 agent outputs | Same job, independent. Doesn't see Codex-A's output |
+
+**SOAP note format:**
+- **S** (Subjective): What the company/analysts say about themselves. Narrative from SEC filings, press releases, analyst reports.
+- **O** (Objective): Hard data. Trial results, FDA letters, ClinicalTrials.gov entries, financial metrics.
+- **A** (Assessment): Framework diagnosis. Which stack, which stage, which prediction type. How the evidence maps to the pipe tree.
+- **P** (Plan): The falsifiable prediction. Claim, catalyst date, timeframe, analyst position for head-to-head.
+- **Refs**: Links to all public sources cited.
+
+- **Semi-blind merge**: both codex instances see the same top-2 evidence but judge independently. Agreement = high confidence. Disagreement = needs human judgment.
+
+**Human Attend**: the user reads both SOAP notes, picks or synthesizes into the final published diagnosis. Skills automate Filter, human keeps Attend.
+
+## 2026-03-20: Prereg tightening (codex sniff test #2)
+
+Codex reviewed the actual prereg.md. Verdict: "Solid as a pilot operations plan. Weak as a true pre-registration." Key issues and how we addressed them:
+
+1. **Prediction template must force binary resolution.** Added: every prediction must be PASS/FAIL on a specific catalyst within a specific window. If it can't be expressed this way, it's not ready to publish.
+
+2. **"Analyst consensus" was undefined.** Replaced with: mechanical extraction of Shkreli's most recent public stance, mapped to bull/bear/neutral using fixed rules. One framework prediction vs. one analyst call. No consensus aggregation.
+
+3. **Void bucket was dangerous.** Tightened: void only if catalyst is cancelled entirely. Delays are scored — window extends by one quarter, max one extension. Delays themselves are evidence for process predictions.
+
+4. **Human merge was a leakage point.** Fixed: when codex instances disagree, human selects one (not synthesizes). Both are published. Selection committed before catalyst date.
+
+5. **Run 0 was implicitly supporting accuracy claims.** Relabeled: "demonstration only." Does not count toward accuracy.
+
+6. **Needed baselines beyond Shkreli.** Added: naive base rate (historical Phase 3 success rates from BIO/Informa) and always-pessimistic baseline. Primary endpoint for Run 1: beat pessimism.
+
+7. **Target list was seeds, not frozen.** Frozen: Run 0 = CAPR, QURE. Run 1 = SPRB, ATYR, INMB. No additions or removals.
+
+8. **Mixed outcomes unaddressed.** Added: prediction template requires specifying which endpoint determines resolution. Scored against that endpoint only.
+
+9. **One prediction per catalyst rule.** Added: no stacking multiple predictions on the same company.
+
+10. **Negativity bias.** Added as known bias #8, controlled by specificity requirement and always-pessimistic baseline.
+
+11. **Downgraded success criterion.** Run 1 primary endpoint: framework accuracy > always-pessimistic baseline. At N=3, this means at least one correct PASS prediction.
+
+12. **No special exemptions for biology.** If the drug fails for biological reasons, prediction still resolves as PASS or FAIL on the stated catalyst.
+
+## 2026-03-20: Prereg tightening (codex sniff test #3)
+
+Four final fixes:
+
+1. **Merge tiebreak**: `soap-a` wins by default. No human selection.
+2. **Dropped forced PASS**: if all predictions are FAIL, run is non-discriminating vs. pessimism. That's a result.
+3. **Freeze point**: explicit commit after Run 0, before Run 1. Message: "Freeze: Run 0 complete, Run 1 locked."
+4. **Per-company catalyst appendix**: locked exact catalyst, source, window, and PASS/FAIL conditions for all three Run 1 companies:
+   - **SPRB**: BLA submission for TA-ERT, by 2026-12-31. PASS = submitted and accepted.
+   - **ATYR**: FDA Type C meeting outcome for efzofitimod, by 2026-06-30. PASS = viable regulatory path confirmed. Note: Phase 3 already missed primary endpoint — this is about whether the company's consolidate stack can find a path from failure.
+   - **INMB**: MAA submission to UK MHRA for CORDStrom, by 2026-09-30. PASS = submitted and acknowledged.
+
+Also added explicit scope section and statistical posture (descriptive only, no inferential claims at N=3).
+
 ### Next
-- Build the CAPR pipe tree (retrospective): map Capricor's org to the consolidate stack, trace HOPE-2 → HOPE-3 iteration, diagnose whether the framework would have predicted the positive result.
+- Build the CAPR pipe tree (demonstration): map Capricor's org to the consolidate stack, trace HOPE-2 → HOPE-3 iteration.
 - Research HOPE-2 vs HOPE-3 differences on ClinicalTrials.gov to check the consolidate heuristic.
+- Write the orchestration script for the 4-agent search dispatch.
+- Look up naive base rates for BLA/MAA submission success and FDA Type C meeting outcomes.
