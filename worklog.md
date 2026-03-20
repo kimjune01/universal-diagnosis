@@ -512,7 +512,38 @@ The molecule's forward pass is rock solid (science done, FDA aligned on surrogat
 
 **Meta-level trauma recurrence**: Allievex went bankrupt bringing TA-ERT to market. Spruce is now attempting the same thing with the same molecule. Is "company dies trying to commercialize this specific drug" a recurring failure class? Different companies, same molecule, same bottleneck (manufacturing/CMC/capital). This is the pipe's consolidate stack failing, not just one company's. Worth tracking but hard to formalize — the pipe topology assumes a single company as the consolidate stack.
 
+## 2026-03-20: SPRB Run 1 — first real prediction
+
+### Agent results
+- Cache-A: molecule history (BioMarin/Allievex), 7yr data, 22 patients, ICV delivery, strong forward pass
+- Cache-B: SEC filings, PPQ delay, going concern, single-asset, financial fragility
+- Consolidate-A: blocked by data sources (FDA/ClinicalTrials.gov API failures), only 1 event
+- Consolidate-B: full pivot narrative, tildacerfont failures, BTD, Shkreli timing, trauma check
+
+### Merge disagreement
+SOAP-A: dying_pivoted, **PASS** — FDA alignment is strong, company is executing despite fragility
+SOAP-B: dying_pivoted, **FAIL** — meta-level trauma recurrence (molecule has outlived two prior consolidate stacks), cash fragility, PPQ execution risk
+
+Per protocol: **soap-a is primary (PASS).** Both published.
+
+### Prediction record (SPRB — first real prospective prediction)
+- Company: SPRB
+- Type: fix (molecule is proven, company is the new consolidate stack)
+- Category: dying_pivoted
+- Direction: PASS
+- Catalyst: BLA submission for TA-ERT
+- Resolution source: Spruce Biosciences press release or SEC 8-K
+- Window start: 2026-10-01
+- Window end: 2026-12-31
+- Pass condition: BLA submitted to FDA and acknowledged
+- Reasoning: Company pivoted from dead tildacerfont program, acquired a mature molecule with BTD/RMAT/Orphan/Fast Track/Rare Pediatric designations, FDA confirmed accelerated approval path with CSF HS-NRE as surrogate. Consolidate stack is fragile (going concern, single-asset) but functional — reading FDA feedback, adapting to PPQ requirements, hiring commercial leadership. The molecule's forward pass doesn't need more learning. The question is execution, and the trajectory shows a company that is executing despite stress.
+
+### Risk the framework surfaces that Shkreli misses
+Shkreli says "will be approved" — that's a forward pass call. The framework says the forward pass is solid but the consolidate stack is fragile. The risk isn't the drug, it's the cash. A PPQ batch slip → cash crisis → BLA delayed past the window → FAIL. Shkreli's $500 target assumes execution. The framework predicts PASS but flags the execution fragility.
+
+### Meta-level trauma recurrence (noted but not scored)
+The molecule has outlived BioMarin (deprioritized) and Allievex (bankrupt). The recurring failure class isn't scientific — it's "company dies trying to commercialize this specific drug." Spruce is attempt #3. This is a pipe-level trauma recurrence that the company-level analysis doesn't capture. Worth tracking.
+
 **Next:**
-- Consolidate-A returns, save all 4
-- Top-2 selection, codex merge
-- First real PASS/FAIL prediction
+- Commit SPRB artifacts
+- ATYR next
