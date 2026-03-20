@@ -51,6 +51,9 @@ What is out of scope:
 - Generalizing beyond biotech
 - Generalizing beyond Shkreli's picks
 
+### Smoke test correction
+A smoke test was run on CAPR using a static-tree framing (pre-temporal-network insight). The agents produced useful evidence but the prompts, report structure, and merge all used a snapshot model, not the temporal graph. Results are stashed in `smoke-test/CAPR/` for reference. The smoke test validated the mechanical pipeline (4-agent search, top-2 selection, codex merge, merge agreement) but the framing was wrong. CAPR will be re-run with temporal graph prompts before Run 0 is considered complete.
+
 ### Freeze point
 All prompts, heuristics, inclusion criteria, merge rules, and scoring rules are frozen after Run 0 completes and before any Run 1 diagnosis begins. The freeze is marked by a single commit with the message "Freeze: Run 0 complete, Run 1 locked." No changes to the protocol after that commit.
 
@@ -150,7 +153,7 @@ For context (not primary endpoint):
 
 Each company diagnosis produces the following artifacts, committed to the repo:
 
-1. **4 search reports** (`searches/{TICKER}/cache-a.md`, `cache-b.md`, `consolidate-a.md`, `consolidate-b.md`) — raw agent outputs with stack traces. Each report traces the path through the pipe tree: which node was expanded, which stack was probed, what evidence was found, what was ruled out, and which child was expanded next. The stack trace is the audit trail — it shows why the agent went deeper at one node and not another. Kept even after top-2 selection.
+1. **4 search reports** (`searches/{TICKER}/cache-a.md`, `cache-b.md`, `consolidate-a.md`, `consolidate-b.md`) — raw agent outputs structured as temporal graphs. Each report produces pipe_state records per snapshot: which pipe node, which time point, what status (functional/broken/stressed/repaired/unknown), what evidence, what source. The temporal sequence is the audit trail — it shows state transitions across snapshots, not just a static assessment. Kept even after top-2 selection.
 2. **2 SOAP notes** (`notes/{TICKER}/soap-a.md`, `soap-b.md`) — codex merge outputs. Independent diagnoses in SOAP format with refs. These are recursive: each pipe node in the tree gets its own nested SOAP entry (stack-level probe, then each child pipe). Expect these to be long — a company decomposed 3 levels deep will have dozens of nested entries.
 3. **1 final diagnosis** (`diagnoses/{TICKER}.md`) — determined by merge agreement or `soap-a` default. This is the published prediction in the template format above.
 4. **Pipe tree in DB** — the recursive decomposition of the company, queryable via `diagnose.py tree TICKER`.

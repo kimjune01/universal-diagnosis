@@ -249,7 +249,33 @@ The framework would have predicted PASS on HOPE-3 because:
 
 This is structurally distinct from Shkreli's analysis, which was a forward-pass snapshot critique ("the drug won't work"). The framework adds the temporal dimension he missed.
 
+## 2026-03-20: CAPR smoke test declared, stashing for redo
+
+### Correction
+The CAPR run was dispatched with the static-tree framing (pre-temporal-network insight). The agents produced useful evidence but the search prompts, report structure, and SOAP merge all used the old model. The data is good; the framing is wrong.
+
+**Decision**: Declare the CAPR run a smoke test (not Run 0 demonstration). Stash the reports, delete intermediate artifacts from the main tree, and redo with temporal graph framing baked into the agent prompts from the start.
+
+**What the smoke test validated:**
+- The 4-agent search protocol works mechanically (all 4 returned, reasonable quality)
+- Top-2 selection is feasible (clear quality gradient)
+- Codex merge produces coherent SOAP notes
+- Both merge instances agreed (good sign for the soap-a default rule)
+- The temporal trajectory insight emerged even from static-framed agents (Consolidate-A naturally found the 4-snapshot sequence)
+
+**What the smoke test exposed:**
+- Agents need the temporal schema in their prompts — they should be explicitly asked to produce pipe_state records per snapshot, not static handoff assessments
+- The top-2 summary file was necessary because raw agent transcripts are too large for codex input (~1.4MB combined)
+- Codex merge prompt needs to reference the snapshot/pipe_state data model explicitly
+
+### Stash plan
+- Move `searches/CAPR/` and `notes/CAPR/` to `smoke-test/CAPR/`
+- Keep the raw data for reference
+- Delete `top2-summary.md` (intermediate artifact)
+- Update prereg to acknowledge the smoke test and corrections
+
 ### Next
+- Stash smoke test artifacts
 - Rebuild init_db.py and diagnose.py for temporal schema
-- Commit all CAPR artifacts
-- Freeze protocol for Run 1
+- Write temporal-aware agent prompts
+- Re-dispatch CAPR with temporal framing
