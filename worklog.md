@@ -274,8 +274,22 @@ The CAPR run was dispatched with the static-tree framing (pre-temporal-network i
 - Delete `top2-summary.md` (intermediate artifact)
 - Update prereg to acknowledge the smoke test and corrections
 
+### Tooling rebuilt for temporal schema
+
+1. **init_db.py**: Seeds CAPR pipe topology (7 nodes: root + 4 cache handoffs + 3 consolidate stages) and 4 temporal snapshots (ALLSTAR, HOPE-1, HOPE-2/BLA, HOPE-3). Pipe_state records are empty — agents fill them.
+
+2. **diagnose.py**: New commands:
+   - `temporal TICKER` — prints pipe × snapshot grid with status markers
+   - `trajectory TICKER` — shows only pipes that changed status across snapshots (the interesting ones)
+   - `scorecard` — unchanged
+
+3. **Prompts committed** (`prompts/` dir):
+   - `cache-agent.md` — forward pass agent. Outputs PIPE_STATE records per handoff per snapshot.
+   - `consolidate-agent.md` — backward pass agent. Outputs PIPE_STATE records per stage per snapshot, plus TRAUMA_CHECK.
+   - `merge-agent.md` — SOAP merge agent. Produces temporal graph table + SOAP note with prediction template.
+
+All prompts require structured output (pipe_state records), not prose. This is the correction from the smoke test — agents must produce temporal graph data, not static assessments.
+
 ### Next
-- Stash smoke test artifacts
-- Rebuild init_db.py and diagnose.py for temporal schema
-- Write temporal-aware agent prompts
+- Commit all tooling and prompts
 - Re-dispatch CAPR with temporal framing
