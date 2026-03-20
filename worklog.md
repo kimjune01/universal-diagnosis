@@ -493,7 +493,26 @@ A snapshot analyst sees two companies with positive data. The framework sees one
 ### Shkreli comparison
 Shkreli was long QURE (correct on the drug, wrong on the company). He sold Nov 2025 before the break — but for unrelated reasons, not because he diagnosed the consolidate stack. The framework would have flagged the risk earlier: the external control methodology was always the vulnerability, and the FDA's 2022 guidance was the first event.
 
+## 2026-03-20: Run 1 — SPRB in progress
+
+### Agents returning (3 of 4 back)
+
+**Consolidate-B**: Spruce's backstory is wild. Tildacerfont failed twice (Mar 2024, Dec 2024), company cut 55% staff, faced Nasdaq delisting, then acquired TA-ERT from BioMarin (via bankrupt Allievex) in April 2025. Going-concern flagged. Trauma recurrence: same_class no (clinical failure vs. manufacturing timeline). Shkreli long, targets $500.
+
+**Cache-A**: The molecule is mature — 7+ years of clinical data under BioMarin/Allievex, 22 patients treated, CSF HS-NRE normalization sustained at 240 weeks, cognitive scores 34.66 points above untreated (p<0.0001). Forward pass is strong. ICV delivery route carries surgical risk (14% hydrocephalus discontinuation). BTD granted.
+
+**Cache-B**: Going concern in 10-K, $48.9M cash, remaining $35M loan tranches are milestone-gated. PPQ batch requirement pushed BLA from Q1 to Q4 2026. Company is single-asset after tildacerfont died. CDMO-dependent for manufacturing. Any PPQ slip = cash crisis before BLA. Also: Allievex went bankrupt trying to bring this same molecule to market — potential meta-level trauma recurrence.
+
+### Key tension
+The molecule's forward pass is rock solid (science done, FDA aligned on surrogate). The company's consolidate stack is fragile (going concern, tight cash, execution-dependent). The prediction is about execution, not science.
+
+### Speculative notes (not in prereg)
+
+**Insider trading as read_outcomes signal**: SEC Form 4 filings are dated public records. Insider buy/sell behavior before 8-K disclosures could be added as events in the temporal graph. If insiders are selling before bad news, read_outcomes is functioning privately while public framing is spin. The divergence between insider behavior and management narrative is itself diagnostic. Future extension — not this pilot.
+
+**Meta-level trauma recurrence**: Allievex went bankrupt bringing TA-ERT to market. Spruce is now attempting the same thing with the same molecule. Is "company dies trying to commercialize this specific drug" a recurring failure class? Different companies, same molecule, same bottleneck (manufacturing/CMC/capital). This is the pipe's consolidate stack failing, not just one company's. Worth tracking but hard to formalize — the pipe topology assumes a single company as the consolidate stack.
+
 **Next:**
-- Commit QURE artifacts
-- Freeze commit
-- Run 1: SPRB, ATYR, INMB
+- Consolidate-A returns, save all 4
+- Top-2 selection, codex merge
+- First real PASS/FAIL prediction
