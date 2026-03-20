@@ -290,6 +290,31 @@ The CAPR run was dispatched with the static-tree framing (pre-temporal-network i
 
 All prompts require structured output (pipe_state records), not prose. This is the correction from the smoke test — agents must produce temporal graph data, not static assessments.
 
+## 2026-03-20: Falsifiability tightening (codex sniff test #4)
+
+Codex reviewed temporal schema + prompts. Verdict: "good conceptual sketch, weak contract." Seven issues, all about the gap between what prompts produce and what the schema stores.
+
+### Fixes applied
+
+1. **Prediction polarity**: added `direction` (pass/fail) and `resolution_source` to prediction table. The DB record is the falsifiable artifact, not the SOAP note.
+
+2. **Pipe identity**: added `UNIQUE(company_id, stack, site)` constraint. No more fuzzy string matching.
+
+3. **Snapshot bounds**: replaced single `timestamp` with `date_start`/`date_end`. Added `UNIQUE(company_id, label)`.
+
+4. **Run 0 catalyst definition**: added CAPR to the prereg appendix with exact catalyst, source, window, and PASS condition (same format as Run 1).
+
+5. **Falsifiability contract**: added to prereg. DB record is the prediction. SOAP notes are disposable. Resolution is mechanical: check source on window_end, apply pass_condition, no judgment.
+
+6. **Trajectory categories**: added `category` field to prediction — living_well, living_dying, dying_pivoted, dying_dying. Maps to direction (pass/fail) but gives more insight into why. CAPR would be dying_pivoted → pass.
+
+### Not fixed yet (acknowledged, acceptable for pilot)
+
+- `pipe_state_source` join table (multi-source provenance) — agents will stuff multiple URLs into evidence text. Good enough for pilot.
+- `trauma_check` table — recurrence judgment stays in the consolidate agent's output file. Not in DB.
+- `diagnosis` table for SOAP artifacts — SOAP notes stay as files, not DB records. Declared disposable in prereg.
+- `confidence` field on pipe_state — "functional but untested" gets mapped to nearest enum value. Noted in agent prompts.
+
 ### Next
-- Commit all tooling and prompts
+- Rebuild DB, verify schema
 - Re-dispatch CAPR with temporal framing

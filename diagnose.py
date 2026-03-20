@@ -98,7 +98,7 @@ def show_temporal(company_id):
     db = _db()
 
     snapshots = db.execute(
-        "SELECT id, label, timestamp FROM snapshot WHERE company_id = ? ORDER BY timestamp",
+        "SELECT id, label, date_start, date_end FROM snapshot WHERE company_id = ? ORDER BY date_start",
         (company_id,),
     ).fetchall()
 
@@ -155,7 +155,7 @@ def show_trajectory(company_id):
     db = _db()
 
     snapshots = db.execute(
-        "SELECT id, label FROM snapshot WHERE company_id = ? ORDER BY timestamp",
+        "SELECT id, label FROM snapshot WHERE company_id = ? ORDER BY date_start",
         (company_id,),
     ).fetchall()
 

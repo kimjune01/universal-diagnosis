@@ -54,16 +54,16 @@ def init():
 
     # Seed snapshots for CAPR (4 temporal snapshots from smoke test findings)
     snapshots = [
-        ("ALLSTAR era", "2012-01-01"),
-        ("HOPE-1 era", "2016-01-01"),
-        ("HOPE-2 / BLA era", "2018-01-01"),
-        ("HOPE-3 era", "2022-01-01"),
+        ("ALLSTAR era", "2012-01-01", "2017-06-30"),
+        ("HOPE-1 era", "2016-01-01", "2019-12-31"),
+        ("HOPE-2 / BLA era", "2018-01-01", "2025-07-11"),
+        ("HOPE-3 era", "2022-01-01", "2025-12-31"),
     ]
 
-    for label, ts in snapshots:
+    for label, start, end in snapshots:
         db.execute(
-            "INSERT INTO snapshot (company_id, label, timestamp) VALUES (?, ?, ?)",
-            (capr_id, label, ts),
+            "INSERT INTO snapshot (company_id, label, date_start, date_end) VALUES (?, ?, ?, ?)",
+            (capr_id, label, start, end),
         )
 
     # Seed known traumas for CAPR

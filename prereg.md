@@ -130,6 +130,12 @@ Analyst position: [bull/bear/neutral, name, date, source URL]
 
 If the prediction cannot be expressed as PASS/FAIL on a specific catalyst within a specific window, it is not ready to publish.
 
+### Falsifiability contract
+- The **prediction record in the database** is the falsifiable artifact. It contains: direction (pass/fail), catalyst, resolution source, window, pass condition, and one-sentence reasoning.
+- **SOAP notes are disposable reasoning**. They are the audit trail for how the prediction was derived, not the prediction itself. If the SOAP note says one thing and the DB record says another, the DB record is what gets scored.
+- **Resolution is mechanical**: on the window_end date, check the resolution_source. If the pass_condition is met, outcome = hit. If not, outcome = miss. No judgment, no interpretation, no model in the loop.
+- Every prediction must be fully specified in the DB before the catalyst date. Incomplete records (missing catalyst, source, window, or pass_condition) are not valid predictions and are excluded from the scorecard.
+
 ## Analyst benchmark rule
 
 For each company, the analyst position is extracted mechanically:
@@ -233,6 +239,20 @@ Run 1 (prospective, primary endpoint): Framework and Shkreli accuracy on the sam
 7. **Embedding model limitations**: all-MiniLM-L6-v2 may not capture biotech-specific semantic similarity. Fallback: manual category labels.
 
 8. **Negativity bias**: The framework may systematically diagnose "broken" more often than "functional" because the probes are designed to find faults. The always-pessimistic baseline and specificity requirement partially control for this.
+
+## Appendix: Run 0 catalyst definitions (demonstration — retrospective, outcome known)
+
+### CAPR (Capricor Therapeutics)
+- **Catalyst**: HOPE-3 Phase 3 topline readout for Deramiocel in DMD
+- **Source**: Capricor Therapeutics press release (capricor.com) or SEC 8-K
+- **Window**: 2025-10-01 to 2025-12-31 (outcome known: Dec 3, 2025)
+- **PASS condition**: Primary endpoint (PUL v2.0 total score) statistically significant
+- **Outcome**: PASS (p=0.029 primary, p=0.041 LVEF key secondary). Known.
+- **Shkreli position**: Bear (short, 46-page report, "it will not work", Nov 24 2025)
+
+### QURE (uniQure)
+- **Catalyst**: TBD — requires research to identify the relevant catalyst and outcome
+- **Shkreli position**: Bull (long, saw 5-10x, sold Nov 2025)
 
 ## Appendix: Run 1 catalyst definitions
 

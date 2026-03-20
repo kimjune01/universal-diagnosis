@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS pipe (
     site TEXT,                          -- handoff or stage within the stack
     depth INTEGER NOT NULL DEFAULT 0,
     is_rock_bottom INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(company_id, stack, site)      -- one pipe per role per company
 );
 
 -- A snapshot of a pipe's state at a point in time (temporal dimension)
@@ -32,8 +33,10 @@ CREATE TABLE IF NOT EXISTS snapshot (
     id INTEGER PRIMARY KEY,
     company_id INTEGER NOT NULL REFERENCES company(id),
     label TEXT NOT NULL,                -- e.g., "HOPE-2 era", "HOPE-3 era", "post-CRL"
-    timestamp TEXT NOT NULL,            -- when this snapshot represents
-    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    date_start TEXT NOT NULL,           -- when this era begins
+    date_end TEXT NOT NULL,             -- when this era ends
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(company_id, label)           -- one snapshot per label per company
 );
 
 CREATE TABLE IF NOT EXISTS pipe_state (
@@ -74,18 +77,28 @@ CREATE TABLE IF NOT EXISTS trauma_embedding (
 );
 
 -- A prediction generated from diagnosis
+-- The prediction is the falsifiable artifact. SOAP notes are disposable reasoning.
 CREATE TABLE IF NOT EXISTS prediction (
     id INTEGER PRIMARY KEY,
     company_id INTEGER NOT NULL REFERENCES company(id),
     pipe_id INTEGER REFERENCES pipe(id),
     type TEXT NOT NULL
         CHECK(type IN ('recurrence', 'cascade', 'fix', 'death', 'mitosis')),
-    claim TEXT NOT NULL,                -- the falsifiable statement
-    evidence TEXT,                      -- what supports the diagnosis
-    catalyst_date TEXT,                 -- when outcome will be known
-    timeframe TEXT,                     -- how long the prediction window is
+    category TEXT NOT NULL              -- temporal trajectory diagnosis
+        CHECK(category IN ('living_well', 'living_dying', 'dying_pivoted', 'dying_dying')),
+    direction TEXT NOT NULL             -- the binary call (derived from category but stored explicitly)
+        CHECK(direction IN ('pass', 'fail')),
+    catalyst TEXT NOT NULL,             -- exact event, e.g., "HOPE-3 Phase 3 topline readout"
+    resolution_source TEXT NOT NULL,    -- exact source that determines outcome
+    window_start TEXT NOT NULL,         -- scoring window opens
+    window_end TEXT NOT NULL,           -- scoring window closes
+    pass_condition TEXT NOT NULL,       -- exact condition for PASS
+    reasoning TEXT NOT NULL,            -- one sentence — temporal trajectory, not snapshot
+    run TEXT NOT NULL                   -- 'run0' or 'run1'
+        CHECK(run IN ('run0', 'run1')),
     published_at TEXT,                  -- when we published (timestamp = priority)
-    outcome TEXT CHECK(outcome IN ('confirmed', 'refuted', 'void', 'pending')),
+    outcome TEXT CHECK(outcome IN ('hit', 'miss', 'void', 'pending'))
+        DEFAULT 'pending',
     outcome_notes TEXT,
     outcome_date TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -110,8 +123,13 @@ SELECT
     c.ticker,
     c.name AS company_name,
     p.type,
-    p.claim,
-    p.catalyst_date,
+    p.category,
+    p.direction,
+    p.catalyst,
+    p.window_end,
+    p.pass_condition,
+    p.reasoning,
+    p.run,
     p.outcome AS framework_outcome,
     a.analyst_name,
     a.position AS analyst_position,
@@ -119,4 +137,4 @@ SELECT
 FROM prediction p
 JOIN company c ON c.id = p.company_id
 LEFT JOIN analyst_call a ON a.prediction_id = p.id
-ORDER BY p.catalyst_date;
+ORDER BY p.window_end;
