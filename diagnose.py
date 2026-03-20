@@ -30,12 +30,12 @@ def add_pipe(company_id, description, stack=None, site=None, parent_id=None):
     return pid
 
 
-def add_snapshot(company_id, label, timestamp):
+def add_snapshot(company_id, label, date_start, date_end):
     """Add a temporal snapshot. Returns snapshot id."""
     db = _db()
     cur = db.execute(
-        "INSERT INTO snapshot (company_id, label, timestamp) VALUES (?, ?, ?)",
-        (company_id, label, timestamp),
+        "INSERT INTO snapshot (company_id, label, date_start, date_end) VALUES (?, ?, ?, ?)",
+        (company_id, label, date_start, date_end),
     )
     db.commit()
     sid = cur.lastrowid
@@ -56,12 +56,20 @@ def set_state(pipe_id, snapshot_id, status, evidence=None, source_url=None):
     db.close()
 
 
-def add_prediction(company_id, pipe_id, pred_type, claim, evidence=None, catalyst_date=None, timeframe=None):
+def add_prediction(
+    company_id, pipe_id, pred_type, category, direction,
+    catalyst, resolution_source, window_start, window_end,
+    pass_condition, reasoning, run,
+):
     """Record a prediction. Returns prediction id."""
     db = _db()
     cur = db.execute(
-        "INSERT INTO prediction (company_id, pipe_id, type, claim, evidence, catalyst_date, timeframe) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (company_id, pipe_id, pred_type, claim, evidence, catalyst_date, timeframe),
+        "INSERT INTO prediction (company_id, pipe_id, type, category, direction, "
+        "catalyst, resolution_source, window_start, window_end, pass_condition, reasoning, run) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (company_id, pipe_id, pred_type, category, direction,
+         catalyst, resolution_source, window_start, window_end,
+         pass_condition, reasoning, run),
     )
     db.commit()
     pid = cur.lastrowid

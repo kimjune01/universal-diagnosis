@@ -116,15 +116,19 @@ The cheap probe for diagnosing the backward pass: instead of "is this company le
 
 ## Prediction template
 
-Every primary prediction must be forced into this binary format before publication:
+Every primary prediction must be forced into this format before publication. Every field is required — this is the mechanically scorable artifact.
 
 ```
 Company: [TICKER]
+Type: [recurrence | cascade | fix | death | mitosis]
+Category: [living_well | living_dying | dying_pivoted | dying_dying]
+Direction: [PASS or FAIL]
 Catalyst: [exact event, e.g., "HOPE-3 Phase 3 topline readout"]
-Source: [exact source that determines outcome, e.g., "ClinicalTrials.gov results posting" or "FDA PDUFA action letter"]
-Window: [exact date range, e.g., "Q4 2026" or "by 2026-12-31"]
-Prediction: [PASS or FAIL]
-Reasoning: [one sentence — which stack, which stage, which prediction type]
+Resolution source: [exact source, e.g., "Capricor press release or SEC 8-K"]
+Window start: [YYYY-MM-DD]
+Window end: [YYYY-MM-DD]
+Pass condition: [exact binary condition, e.g., "Primary endpoint statistically significant"]
+Reasoning: [one sentence — temporal trajectory, not snapshot]
 Analyst position: [bull/bear/neutral, name, date, source URL]
 ```
 
@@ -162,7 +166,7 @@ Each company diagnosis produces the following artifacts, committed to the repo:
 1. **4 search reports** (`searches/{TICKER}/cache-a.md`, `cache-b.md`, `consolidate-a.md`, `consolidate-b.md`) — raw agent outputs structured as temporal graphs. Each report produces pipe_state records per snapshot: which pipe node, which time point, what status (functional/broken/stressed/repaired/unknown), what evidence, what source. The temporal sequence is the audit trail — it shows state transitions across snapshots, not just a static assessment. Kept even after top-2 selection.
 2. **2 SOAP notes** (`notes/{TICKER}/soap-a.md`, `soap-b.md`) — codex merge outputs. Independent diagnoses in SOAP format with refs. These are recursive: each pipe node in the tree gets its own nested SOAP entry (stack-level probe, then each child pipe). Expect these to be long — a company decomposed 3 levels deep will have dozens of nested entries.
 3. **1 final diagnosis** (`diagnoses/{TICKER}.md`) — determined by merge agreement or `soap-a` default. This is the published prediction in the template format above.
-4. **Pipe tree in DB** — the recursive decomposition of the company, queryable via `diagnose.py tree TICKER`.
+4. **Pipe tree in DB** — the recursive decomposition of the company, queryable via `diagnose.py temporal TICKER`.
 5. **Prediction record in DB** — the falsifiable claim, catalyst date, analyst position, outcome (pending until scored).
 6. **Trauma records in DB** — known failures with embeddings, used for recurrence probes on this and future companies.
 
@@ -251,8 +255,12 @@ Run 1 (prospective, primary endpoint): Framework and Shkreli accuracy on the sam
 - **Shkreli position**: Bear (short, 46-page report, "it will not work", Nov 24 2025)
 
 ### QURE (uniQure)
-- **Catalyst**: TBD — requires research to identify the relevant catalyst and outcome
-- **Shkreli position**: Bull (long, saw 5-10x, sold Nov 2025)
+- **Catalyst**: AMT-130 Phase I/II topline readout for Huntington's disease (36-month data)
+- **Source**: uniQure press release via uniqure.com or SEC 8-K
+- **Window**: 2025-08-01 to 2025-10-31 (outcome known: Sep 2025)
+- **PASS condition**: Primary endpoint (cUHDRS) statistically significant vs. external control
+- **Outcome**: PASS (75% slowing, p significant). Known. But: FDA subsequently said data not sufficient for marketing application (Jan 2026 Type A meeting). Company now seeking Type B meeting for Phase III design.
+- **Shkreli position**: Bull (long, saw 5-10x, sold Nov 2025 — before FDA pushback)
 
 ## Appendix: Run 1 catalyst definitions
 
@@ -268,8 +276,8 @@ Run 1 (prospective, primary endpoint): Framework and Shkreli accuracy on the sam
 - **Catalyst**: aTyr announces intent to initiate a new clinical trial for efzofitimod in sarcoidosis following FDA Type C meeting (mid-April 2026)
 - **Source**: aTyr Pharma press release via investors.atyrpharma.com or SEC 8-K filing
 - **Window**: by 2026-09-30 (Type C meeting mid-April, FDA minutes within 30 days, 8-K within 4 business days of material event, then company decision within one quarter)
-- **PASS condition**: aTyr issues a press release or 8-K announcing a new sarcoidosis trial (any phase) with FDA alignment
-- **FAIL condition**: No such announcement by window end
+- **PASS condition**: aTyr issues a press release or 8-K announcing a new sarcoidosis clinical trial (any phase, any design)
+- **FAIL condition**: No such press release or 8-K by window end
 - **Rationale**: This tests the consolidate stack (Read → Batch Process → Write Substrate). The FDA meeting is the Read. The company's decision is the Batch Process. Announcing a new trial is the Write — the company committing to a new iteration. If the consolidate stack is functional, the company reads the feedback, processes it, and writes a new trial back to the substrate. If broken, they stall, pivot away from sarcoidosis, or go silent.
 - **Shkreli position**: Bear (short, predicted 80% crash)
 

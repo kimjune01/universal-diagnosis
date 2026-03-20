@@ -30,14 +30,18 @@ Framework diagnosis:
 - State whether the consolidate stack is functional, broken, or mixed
 
 ### P (Plan)
-The prediction in template format:
+The prediction record. Every field is required — this is the falsifiable artifact.
 
 ```
 Company: [TICKER]
-Catalyst: [exact event]
-Source: [exact source that determines outcome]
-Window: [date range]
-Prediction: [PASS or FAIL]
+Type: [recurrence | cascade | fix | death | mitosis]
+Category: [living_well | living_dying | dying_pivoted | dying_dying]
+Direction: [PASS or FAIL]
+Catalyst: [exact event, e.g., "HOPE-3 Phase 3 topline readout"]
+Resolution source: [exact source, e.g., "Capricor press release or SEC 8-K"]
+Window start: [YYYY-MM-DD]
+Window end: [YYYY-MM-DD]
+Pass condition: [exact binary condition, e.g., "Primary endpoint statistically significant"]
 Reasoning: [one sentence — temporal trajectory, not snapshot]
 ```
 
