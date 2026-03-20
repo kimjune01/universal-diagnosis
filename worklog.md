@@ -323,6 +323,58 @@ Replaced with B1: "aTyr announces intent to initiate a new sarcoidosis trial." T
 
 B2 (actual ClinicalTrials.gov registration) was considered but tests execution, not learning. We want to test the learning loop.
 
-### Next
-- Fix remaining codex issues (merge prompt fields, analyst_call schema, QURE catalyst)
-- Re-dispatch CAPR with temporal framing
+## 2026-03-20: Codex bounce rounds #5-7
+
+Bounced back and forth with codex until no major blockers remained.
+
+**Round 5** (4 blockers):
+1. diagnose.py snapshot API still used `timestamp` instead of `date_start`/`date_end` — fixed
+2. ATYR still had "with FDA alignment" — removed
+3. QURE was TBD — researched and locked (AMT-130 topline, outcome known Sep 2025, FDA subsequently pushed back Jan 2026)
+4. prereg referenced `diagnose.py tree TICKER` but CLI only has `temporal`/`trajectory`/`scorecard` — fixed
+
+**Round 6** (2 blockers):
+1. diagnose.py `add_snapshot()` still wrote `timestamp` column — fixed to `date_start`/`date_end`
+2. prereg prediction template was old format (Company/Catalyst/Source/Window/Prediction/Reasoning) — updated to match all DB fields (type, category, direction, resolution_source, window_start, window_end, pass_condition, reasoning)
+
+**Round 7** (3 blockers):
+1. `published_at` nullable, no way to prove record existed before catalyst — fixed: `add_prediction()` now auto-sets `published_at = datetime('now')` on insert
+2. Scorecard admitted unpublished predictions — fixed: scorecard view now filters `WHERE published_at IS NOT NULL`
+3. `analyst_call` allowed multiple rows per prediction — fixed: added `UNIQUE(prediction_id)`, changed `position` to `direction` (pass/fail enum), matches prediction schema
+
+After round 7, codex had no remaining blockers.
+
+## 2026-03-20: Peters' framework — what it does for us
+
+Researched Joseph Peters' sequence-based dynamic graphs (Theory of Computing Systems, 2019). Key insight: the framework provides two operations on a graph sequence G₁, G₂, ..., Gδ:
+
+- **Composition**: combine adjacent snapshots into a compound view
+- **Test**: check if a property holds on the compound
+
+Slide the window, repeat. Different test operations on the same sequence yield different "stories" — same data, multiple perspectives and arcs.
+
+**What this gives us:**
+- Same snapshot sequence, different test operations → different arcs (cache stack test vs. consolidate stack test)
+- T-interval connectivity with different T → different arc lengths (local learning vs. strategic coherence)
+- Amortized Θ(1) per new snapshot → ongoing monitoring is cheap (compose new snapshot with running compound, test, done)
+- The pledge/turn/prestige arc structure maps directly: initial state → break → repair trajectory. The framework formalizes *why* the prestige was earned.
+
+**The core contribution to our project**: not just "temporal graphs exist" but that you can compute trajectory properties in constant time per new event, and ask different questions of the same sequence by swapping the test. Formalized storytelling.
+
+### Status summary (end of session)
+
+**Done:**
+- Design doc, biotech pilot, prereg (7 rounds of codex review)
+- Temporal schema (pipes, snapshots, pipe_states, predictions, analyst_calls)
+- Agent prompts (cache, consolidate, merge) requiring PIPE_STATE records
+- All scripts match schema, all constraints enforced
+- CAPR smoke test completed and stashed (validated pipeline mechanics)
+- All 5 company catalysts locked (CAPR, QURE for Run 0; SPRB, ATYR, INMB for Run 1)
+- Falsifiability contract: DB record is the prediction, resolution is mechanical, SOAP is disposable
+- Public repo: github.com/kimjune01/universal-diagnosis
+
+**Next:**
+- Re-dispatch CAPR with temporal framing (proper Run 0)
+- Complete QURE Run 0
+- Freeze commit
+- Run 1: SPRB, ATYR, INMB
