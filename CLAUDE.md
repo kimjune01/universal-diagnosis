@@ -1,19 +1,35 @@
 # Universal Diagnosis
 
-Research exploration: cheap Attend for agents via MCTS-based diagnosis over a universal fault taxonomy.
+Generate falsifiable predictions from the Natural Framework. Biotech pilot: head-to-head with Martin Shkreli's public calls.
 
-## Context
+## Goal
 
-- The Natural Framework defines six roles for any information system (Perceive/Cache/Filter/Attend/Remember/Consolidate)
-- Blind-blind-merge is a working but expensive Attend implementation (portfolio solvers cell)
-- This project explores MCTS (implicit redundancy, same row) as the cheaper alternative
-- The key contribution: using the six roles as a universal fault tree, making diagnosis portable across domains
+Legitimize the Natural Framework by publishing timestamped predictions that outperform domain expert analysts. The molecule is the pipe, the company is its consolidate stack.
 
 ## Key files
 
-- `README.md` — problem statement and open questions
-- `taxonomy.md` — the universal fault taxonomy (sector/domain/function/role)
-- `probes.md` — catalog of diagnostic probes per role
+- `design.md` — full design: goal, prediction types, runs, coordination protocol
+- `biotech.md` — biotech pilot: org-chart mapping, analyst head-to-head, data sources
+- `prereg.md` — pre-registration for scientific accountability
+- `taxonomy.md` — recursive pipe tree (self-similar, no privileged scales)
+- `probes.md` — diagnostic probes by stack and fault site
+- `worklog.md` — running log of decisions and progress
+
+## Scripts
+
+- `init_db.py` — create DB, seed companies and traumas
+- `embed.py` — embed descriptions for semantic matching (all-MiniLM-L6-v2)
+- `diagnose.py` — CLI: `tree TICKER`, `scorecard`
+- `schema.sql` — SQLite schema
+
+## Commands
+
+```bash
+uv run python init_db.py          # initialize/reset database
+uv run python embed.py            # embed unembedded pipes and traumas
+uv run python diagnose.py tree CAPR    # show pipe tree for a company
+uv run python diagnose.py scorecard    # show prediction scorecard
+```
 
 ## Related
 

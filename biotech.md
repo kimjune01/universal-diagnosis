@@ -83,6 +83,22 @@ A pharma giant acquiring a biotech is buying a consolidate stack. The acquirer's
 
 **Prediction**: Acquisitions where the acquirer already has a working consolidate stack for the same mechanism class will underperform. The acquired company's consolidate stack is redundant — the acquirer is paying for iterations it could have done itself. Acquisitions where the mechanism is genuinely novel to the acquirer should outperform.
 
+## Head-to-head with analysts
+
+Biotech analysts are mini-celebrities with public track records. The legitimacy play: make timestamped predictions that directly contradict named analysts, then score both.
+
+**The edge**: Analysts have domain depth (biology, regulatory, management) but no structural theory of the learning loop. They predict whether the drug works. The framework predicts whether the *company can iterate* — will the next compound be meaningfully different, or will they repeat the same failure? Process prediction vs. outcome prediction.
+
+**Format**: For each prediction, record:
+- The framework's prediction and reasoning (which stack, which stage, which prediction type)
+- The analyst consensus or a specific named analyst's call
+- The outcome
+- Who was right
+
+**Scorecard honesty**: Publish misses with the same prominence as hits. Analysts rarely publish their miss rate. A public loss record is itself a credibility signal.
+
+**Distribution**: The analyst community is small. One correct non-obvious call that contradicts a known analyst gets noticed. The prediction doesn't need to be right every time — it needs to be right on cases the analysts got wrong.
+
 ## Data sources
 
 All free or cheap:
@@ -98,5 +114,9 @@ Criteria for retrospective case selection:
 1. At least two trials on the same target/mechanism with public results
 2. Clear outcome (approval, failure, pivot, spin-off, acquisition, death)
 3. Enough public documentation to run the diagnostic tree 2-3 levels deep
+
+**Catalyst calendar**: Biotech has pre-scheduled events — quarterly earnings, PDUFA dates, trial readouts, conference presentations (ASCO, AACR, JPM). Publish predictions before a known catalyst date. Outcome is public within days. No ambiguity about timing.
+
+This gives the fastest possible iteration cycle for the scorecard. One prediction can be tested per quarter, not per decade.
 
 TODO: Select 3-5 specific companies.
