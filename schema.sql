@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS company (
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- A pipe node in the recursive tree
+-- A pipe node in the recursive tree (topology — stable across time)
 -- Every node is a pipe. Every pipe has the same shape.
 CREATE TABLE IF NOT EXISTS pipe (
     id INTEGER PRIMARY KEY,
@@ -21,11 +21,30 @@ CREATE TABLE IF NOT EXISTS pipe (
     stack TEXT CHECK(stack IN ('cache', 'consolidate')),
     site TEXT,                          -- handoff or stage within the stack
     depth INTEGER NOT NULL DEFAULT 0,
-    status TEXT NOT NULL DEFAULT 'unexplored'
-        CHECK(status IN ('unexplored', 'claimed', 'diagnosed', 'cleared')),
-    diagnosis TEXT,                     -- conclusion, if any
     is_rock_bottom INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- A snapshot of a pipe's state at a point in time (temporal dimension)
+-- Same node set, different edge states per snapshot.
+-- Peters' sequence-based dynamic graph: G_i = (V, E_i) at time i.
+CREATE TABLE IF NOT EXISTS snapshot (
+    id INTEGER PRIMARY KEY,
+    company_id INTEGER NOT NULL REFERENCES company(id),
+    label TEXT NOT NULL,                -- e.g., "HOPE-2 era", "HOPE-3 era", "post-CRL"
+    timestamp TEXT NOT NULL,            -- when this snapshot represents
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS pipe_state (
+    id INTEGER PRIMARY KEY,
+    pipe_id INTEGER NOT NULL REFERENCES pipe(id),
+    snapshot_id INTEGER NOT NULL REFERENCES snapshot(id),
+    status TEXT NOT NULL DEFAULT 'unknown'
+        CHECK(status IN ('functional', 'broken', 'stressed', 'repaired', 'unknown')),
+    evidence TEXT,                      -- what we observed at this time
+    source_url TEXT,                    -- link to public evidence
+    UNIQUE(pipe_id, snapshot_id)        -- one state per pipe per snapshot
 );
 
 -- Embedding for pipe descriptions (deduplication + semantic search)

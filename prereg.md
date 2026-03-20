@@ -87,8 +87,15 @@ Each company diagnosis is conducted by 4 Claude subagents searching in parallel,
 
 The 2×2 redundancy serves as the diversity guarantee. If both instances of a search angle find the same evidence independently, it's signal. Divergence is also signal.
 
+### Data model: temporal network
+The pipe tree is modeled as a sequence-based dynamic graph (Peters et al., 2019). The node set (pipe topology) is stable across time. The edge states (functional/broken/stressed/repaired/unknown) vary per snapshot. Each snapshot represents the system at a point in time (e.g., "HOPE-2 era", "post-CRL", "HOPE-3 era").
+
+The consolidate heuristic becomes a **temporal connectivity test**: is there a path from "failure observed at snapshot t₁" to "behavior changed at snapshot t₂"? If yes, the company learned. If the same state persists across snapshots, the consolidate stack is broken.
+
+This replaces the single-snapshot static tree from the initial design.
+
 ### Tools
-- SQLite database with relational schema (companies, recursive pipe tree, traumas, predictions, analyst calls)
+- SQLite database with temporal schema: pipes (topology), snapshots (time points), pipe_states (status per pipe per snapshot), traumas, predictions, analyst calls
 - Sentence embeddings (all-MiniLM-L6-v2) for semantic matching of trauma descriptions and pipe descriptions
 - Cosine similarity threshold (0.6) for recurrence probe: "is this failure similar to a prior failure?"
 - Public data sources: ClinicalTrials.gov, FDA databases, SEC EDGAR, PubMed

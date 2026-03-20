@@ -186,8 +186,41 @@ Four final fixes:
 
 Also added explicit scope section and statistical posture (descriptive only, no inferential claims at N=3).
 
+## 2026-03-20: CAPR search dispatched + temporal network insight
+
+### CAPR search (4 agents dispatched)
+Launched 4 parallel agents on CAPR per protocol. Cache-B returned first with excellent data from SEC EDGAR filings.
+
+Cache-B key finding: the forward pass was **broken and rebuilt**, not patched. The original BLA (2024) tried to skip from HOPE-2 (n=20, Phase 2, cardiac subscore, natural history comparison) directly to approval. FDA rejected at Attend→Remember handoff (CRL: "did not meet substantial evidence of effectiveness"). Company then ran HOPE-3 (n=106, Phase 3, placebo-controlled, full PUL v2.0 primary + LVEF key secondary). Resubmission accepted, PDUFA August 22, 2026.
+
+### Temporal network reframe (INVALIDATES static tree)
+
+User's insight from Prof. Joseph Peters (SFU): our pipe tree is a temporal network, not a static tree. Peters' sequence-based dynamic graphs (Theory of Computing Systems, 2019) model exactly this — same node set, different edge states per time snapshot, with composition and test operations.
+
+**What this changes:**
+- The pipe tree topology (nodes = handoffs, roles) is stable across time
+- The *states* (functional/broken/stressed/repaired) vary per snapshot
+- The consolidate heuristic is a temporal connectivity test: does information propagate from failure at t₁ to repair at t₂?
+- Schema updated: added `snapshot` and `pipe_state` tables, removed status/diagnosis from `pipe`
+
+**CAPR as temporal graph (from Cache-B data):**
+
+| Handoff | t₁ (HOPE-2/BLA era) | t₂ (HOPE-3 era) |
+|---|---|---|
+| Perceive → Cache | Functional | Stressed (two-facility split, CMC issues) |
+| Cache → Filter | Functional | Functional (widened slightly) |
+| Filter → Attend | Broken (subscore endpoint, n=20) | Repaired (PUL v2.0 total, n=106) |
+| Attend → Remember | Broken (CRL, insufficient evidence) | Functional (PDUFA Aug 2026) |
+
+Two handoffs were broken at t₁ and repaired at t₂. That's temporal connectivity — the consolidate stack propagated the failure signal backward and the forward pass was rebuilt. Framework would have predicted PASS on HOPE-3 because the consolidate stack was functional.
+
+**Shkreli's error through this lens:** his 46-page short report analyzed the forward pass at t₁ ("the drug won't work") without checking whether the consolidate stack had repaired the broken handoffs by t₂. He diagnosed a snapshot, not a trajectory.
+
+### CAPR search invalidated
+The 4 agents were dispatched with the old static-tree framing. Their data is still useful as raw evidence, but the search reports need to be restructured as temporal sequences (pipe states across snapshots), not static handoff assessments. Will reformat when all agents return.
+
 ### Next
-- Build the CAPR pipe tree (demonstration): map Capricor's org to the consolidate stack, trace HOPE-2 → HOPE-3 iteration.
-- Research HOPE-2 vs HOPE-3 differences on ClinicalTrials.gov to check the consolidate heuristic.
-- Write the orchestration script for the 4-agent search dispatch.
-- Look up naive base rates for BLA/MAA submission success and FDA Type C meeting outcomes.
+- Wait for remaining 3 agents to return
+- Reformat all 4 CAPR search reports as temporal graphs
+- Rebuild init_db.py and diagnose.py for the temporal schema
+- Re-dispatch CAPR with temporal framing if needed, or reformat existing data
