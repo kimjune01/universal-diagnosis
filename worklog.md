@@ -578,6 +578,43 @@ Framework: drug works on QoL endpoints, endpoint choice was wrong (filter_attend
 
 This is the inverse of QURE: both had Phase 3 issues with the FDA. QURE fought the feedback (read_outcomes broken → dying_dying). ATYR is engaging constructively (read_outcomes functional → dying_pivoted). The framework predicts different outcomes for the same superficial situation based on consolidate stack health.
 
-**Next:**
-- Commit ATYR artifacts
-- INMB last
+## 2026-03-20: INMB Run 1 — third prospective prediction
+
+### Agent results
+- Cache-A: MissionEB Phase 3 primary MISSED (EBDASI p=0.15, favoured placebo by 3.75 points). Secondary signals in itch, pain, weight gain. Effect transient (peaks 56-112 days).
+- Cache-B: Going concern Q3 10-Q, $27.7M cash, CEO transition mid-crisis, three dilutions in 15 months, BMF ghost consultant allegations unaddressed, XPro $16.5M impairment.
+- Consolidate-A: BLA slipped 12 months (2025→late 2026), MHRA pre-submission filed Feb 2026, manufacturing runs complete, FDA aligned on XPro Phase 2b/3.
+- Consolidate-B: Read_outcomes functional (honest framing, peer venue presentations), write_substrate functional (MHRA package, manufacturing, FDA alignment), but pattern of post-failure reframing.
+
+### Both merges agree: dying_pivoted, FAIL
+First unanimous merge. Both codex instances independently concluded: the temporal pattern of repeated primary misses, timeline slippage, going-concern pressure, and post-failure reframing makes a clean MAA submission unlikely by September 30.
+
+### Prediction record (INMB)
+- Company: INMB
+- Type: recurrence (pattern: primary miss → secondary salvage → timeline slip)
+- Category: dying_pivoted
+- Direction: FAIL
+- Catalyst: CORDStrom MAA submitted to UK MHRA and acknowledged
+- Resolution source: INmune Bio press release or SEC 8-K
+- Window start: 2026-06-01
+- Window end: 2026-09-30
+- Pass condition: MAA submitted and acknowledged by MHRA
+- Reasoning: Two programs both missed primaries. Both pivoting to secondary/totality-of-evidence. BLA already slipped 12 months. Going concern with $27.7M cash. CEO transition mid-crisis. The temporal trajectory shows a company that iterates post-failure narratives but slips execution timelines. MHRA pre-submission filed (real forward motion) but the pattern predicts another delay.
+
+### Framework vs Shkreli
+Shkreli: "90% drop" — most extreme call, generic bearish. Stock dropped ~60% on XPro miss but has partially recovered.
+Framework: agrees with bear direction for different reasons. Not "bad drug" but "bad pattern" — the consolidate stack rewrites narratives faster than it ships filings. The prediction isn't stock price collapse, it's specific: MAA won't be submitted on time.
+
+### Pattern across all five companies
+
+| Company | Category | Direction | Merges agree? | Shkreli |
+|---------|----------|-----------|---------------|---------|
+| CAPR | dying_pivoted | PASS | Yes | Bear (wrong) |
+| QURE | dying_dying | FAIL | Yes | Bull (right to sell, wrong reason) |
+| SPRB | dying_pivoted | PASS | No (soap-a) | Bull |
+| ATYR | dying_pivoted | PASS | No (soap-a) | Bear |
+| INMB | dying_pivoted | FAIL | Yes | Bear |
+
+Three PASS, two FAIL. Four dying_pivoted, one dying_dying. Three unanimous, two split. The framework disagrees with Shkreli on CAPR (framework right retrospectively) and ATYR (TBD).
+
+**Run 1 complete. All three predictions on the record.**
