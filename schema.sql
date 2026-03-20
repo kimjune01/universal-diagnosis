@@ -26,28 +26,19 @@ CREATE TABLE IF NOT EXISTS pipe (
     UNIQUE(company_id, stack, site)      -- one pipe per role per company
 );
 
--- A snapshot of a pipe's state at a point in time (temporal dimension)
--- Same node set, different edge states per snapshot.
--- Peters' sequence-based dynamic graph: G_i = (V, E_i) at time i.
-CREATE TABLE IF NOT EXISTS snapshot (
-    id INTEGER PRIMARY KEY,
-    company_id INTEGER NOT NULL REFERENCES company(id),
-    label TEXT NOT NULL,                -- e.g., "HOPE-2 era", "HOPE-3 era", "post-CRL"
-    date_start TEXT NOT NULL,           -- when this era begins
-    date_end TEXT NOT NULL,             -- when this era ends
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    UNIQUE(company_id, label)           -- one snapshot per label per company
-);
-
-CREATE TABLE IF NOT EXISTS pipe_state (
+-- An event: a public record that changes a pipe's state.
+-- The temporal graph grows one event at a time.
+-- Peters' sequence-based dynamic graph: G_i = (V, E_i) at time i,
+-- where i is the archival date of the record.
+CREATE TABLE IF NOT EXISTS event (
     id INTEGER PRIMARY KEY,
     pipe_id INTEGER NOT NULL REFERENCES pipe(id),
-    snapshot_id INTEGER NOT NULL REFERENCES snapshot(id),
-    status TEXT NOT NULL DEFAULT 'unknown'
+    source_date TEXT NOT NULL,          -- archival date of the public record
+    status TEXT NOT NULL
         CHECK(status IN ('functional', 'broken', 'stressed', 'repaired', 'unknown')),
-    evidence TEXT,                      -- what we observed at this time
-    source_url TEXT,                    -- link to public evidence
-    UNIQUE(pipe_id, snapshot_id)        -- one state per pipe per snapshot
+    evidence TEXT NOT NULL,             -- what the record says
+    source_url TEXT NOT NULL,           -- link to the public record
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 -- Embedding for pipe descriptions (deduplication + semantic search)

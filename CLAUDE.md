@@ -19,18 +19,18 @@ Legitimize the Natural Framework by publishing timestamped predictions that outp
 
 - `init_db.py` — create DB, seed companies and traumas
 - `embed.py` — embed descriptions for semantic matching (all-MiniLM-L6-v2)
-- `diagnose.py` — CLI: `temporal TICKER`, `trajectory TICKER`, `scorecard`
-- `schema.sql` — SQLite schema (temporal: pipes, snapshots, pipe_states, predictions)
+- `diagnose.py` — CLI: `timeline TICKER`, `transitions TICKER`, `scorecard`
+- `schema.sql` — SQLite schema (temporal: pipes, events, predictions)
 - `prompts/` — agent prompts (cache, consolidate, merge)
 
 ## Commands
 
 ```bash
-uv run python init_db.py                    # initialize/reset database
-uv run python embed.py                      # embed unembedded pipes and traumas
-uv run python diagnose.py temporal CAPR     # show pipe × snapshot grid
-uv run python diagnose.py trajectory CAPR   # show state transitions only
-uv run python diagnose.py scorecard         # show prediction scorecard
+uv run python init_db.py                      # initialize/reset database
+uv run python embed.py                        # embed unembedded pipes and traumas
+uv run python diagnose.py timeline CAPR       # show event timeline per pipe
+uv run python diagnose.py transitions CAPR    # show status changes only
+uv run python diagnose.py scorecard           # show prediction scorecard
 ```
 
 ## Related

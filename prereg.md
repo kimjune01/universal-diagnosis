@@ -91,14 +91,16 @@ Each company diagnosis is conducted by 4 Claude subagents searching in parallel,
 The 2×2 redundancy serves as the diversity guarantee. If both instances of a search angle find the same evidence independently, it's signal. Divergence is also signal.
 
 ### Data model: temporal network
-The pipe tree is modeled as a sequence-based dynamic graph (Peters et al., 2019). The node set (pipe topology) is stable across time. The edge states (functional/broken/stressed/repaired/unknown) vary per snapshot. Each snapshot represents the system at a point in time (e.g., "HOPE-2 era", "post-CRL", "HOPE-3 era").
+The pipe tree is modeled as a sequence-based dynamic graph (Peters et al., 2019). The node set (pipe topology) is stable across time. The graph grows one event at a time — each event is a public record with an archival date that changes a pipe's state.
 
-The consolidate heuristic becomes a **temporal connectivity test**: is there a path from "failure observed at snapshot t₁" to "behavior changed at snapshot t₂"? If yes, the company learned. If the same state persists across snapshots, the consolidate stack is broken.
+No pre-defined snapshots or eras. The temporal graph develops from the evidence. Each event has: pipe, source_date (archival date of the public record), status, evidence, source_url. The archival date is the ground truth timestamp, not an estimated era label.
 
-This replaces the single-snapshot static tree from the initial design.
+The consolidate heuristic becomes a **temporal connectivity test**: is there a path from "failure event at date d₁" to "repair event at date d₂" on the same pipe? If yes, the company learned. If the same broken status persists across events, the consolidate stack is broken.
+
+Peters' composition operation: compose consecutive events into a compound view. Peters' test operation: check if a property (e.g., "did learning propagate?") holds on the compound. Amortized Θ(1) per new event.
 
 ### Tools
-- SQLite database with temporal schema: pipes (topology), snapshots (time points), pipe_states (status per pipe per snapshot), traumas, predictions, analyst calls
+- SQLite database with temporal schema: pipes (topology), events (public records with archival dates and status), traumas, predictions, analyst calls
 - Sentence embeddings (all-MiniLM-L6-v2) for semantic matching of trauma descriptions and pipe descriptions
 - Cosine similarity threshold (0.6) for recurrence probe: "is this failure similar to a prior failure?"
 - Public data sources: ClinicalTrials.gov, FDA databases, SEC EDGAR, PubMed
@@ -163,10 +165,10 @@ For context (not primary endpoint):
 
 Each company diagnosis produces the following artifacts, committed to the repo:
 
-1. **4 search reports** (`searches/{TICKER}/cache-a.md`, `cache-b.md`, `consolidate-a.md`, `consolidate-b.md`) — raw agent outputs structured as temporal graphs. Each report produces pipe_state records per snapshot: which pipe node, which time point, what status (functional/broken/stressed/repaired/unknown), what evidence, what source. The temporal sequence is the audit trail — it shows state transitions across snapshots, not just a static assessment. Kept even after top-2 selection.
+1. **4 search reports** (`searches/{TICKER}/cache-a.md`, `cache-b.md`, `consolidate-a.md`, `consolidate-b.md`) — raw agent outputs structured as event streams. Each report produces EVENT records: pipe, source_date (archival date of public record), status, evidence, source_url. The event stream is the audit trail — it shows the temporal graph developing one record at a time. Kept even after top-2 selection.
 2. **2 SOAP notes** (`notes/{TICKER}/soap-a.md`, `soap-b.md`) — codex merge outputs. Independent diagnoses in SOAP format with refs. These are recursive: each pipe node in the tree gets its own nested SOAP entry (stack-level probe, then each child pipe). Expect these to be long — a company decomposed 3 levels deep will have dozens of nested entries.
 3. **1 final diagnosis** (`diagnoses/{TICKER}.md`) — determined by merge agreement or `soap-a` default. This is the published prediction in the template format above.
-4. **Pipe tree in DB** — the recursive decomposition of the company, queryable via `diagnose.py temporal TICKER`.
+4. **Pipe tree in DB** — the recursive decomposition of the company, queryable via `diagnose.py timeline TICKER`.
 5. **Prediction record in DB** — the falsifiable claim, catalyst date, analyst position, outcome (pending until scored).
 6. **Trauma records in DB** — known failures with embeddings, used for recurrence probes on this and future companies.
 

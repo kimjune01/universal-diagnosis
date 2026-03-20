@@ -30,30 +30,17 @@ def add_pipe(company_id, description, stack=None, site=None, parent_id=None):
     return pid
 
 
-def add_snapshot(company_id, label, date_start, date_end):
-    """Add a temporal snapshot. Returns snapshot id."""
+def add_event(pipe_id, source_date, status, evidence, source_url):
+    """Record an event — a public record that changes a pipe's state."""
     db = _db()
     cur = db.execute(
-        "INSERT INTO snapshot (company_id, label, date_start, date_end) VALUES (?, ?, ?, ?)",
-        (company_id, label, date_start, date_end),
+        "INSERT INTO event (pipe_id, source_date, status, evidence, source_url) VALUES (?, ?, ?, ?, ?)",
+        (pipe_id, source_date, status, evidence, source_url),
     )
     db.commit()
-    sid = cur.lastrowid
+    eid = cur.lastrowid
     db.close()
-    return sid
-
-
-def set_state(pipe_id, snapshot_id, status, evidence=None, source_url=None):
-    """Record a pipe's state at a snapshot. Upserts."""
-    db = _db()
-    db.execute(
-        "INSERT INTO pipe_state (pipe_id, snapshot_id, status, evidence, source_url) "
-        "VALUES (?, ?, ?, ?, ?) "
-        "ON CONFLICT(pipe_id, snapshot_id) DO UPDATE SET status=excluded.status, evidence=excluded.evidence, source_url=excluded.source_url",
-        (pipe_id, snapshot_id, status, evidence, source_url),
-    )
-    db.commit()
-    db.close()
+    return eid
 
 
 def add_prediction(
@@ -102,14 +89,9 @@ def score_prediction(prediction_id, outcome, notes=None):
     db.close()
 
 
-def show_temporal(company_id):
-    """Print the temporal graph: pipe states across snapshots."""
+def show_timeline(company_id):
+    """Print the event timeline for a company — the temporal graph as it developed."""
     db = _db()
-
-    snapshots = db.execute(
-        "SELECT id, label, date_start, date_end FROM snapshot WHERE company_id = ? ORDER BY date_start",
-        (company_id,),
-    ).fetchall()
 
     pipes = db.execute(
         "SELECT id, description, stack, site, depth FROM pipe WHERE company_id = ? ORDER BY depth, id",
@@ -119,54 +101,34 @@ def show_temporal(company_id):
     if not pipes:
         print("No pipes for this company.")
         return
-    if not snapshots:
-        print("No snapshots for this company.")
-        return
-
-    # Header
-    snap_labels = [s["label"] for s in snapshots]
-    col_w = max(len(l) for l in snap_labels) + 2
-    pipe_w = 45
-    header = f"{'Pipe':<{pipe_w}}" + "".join(f"{l:^{col_w}}" for l in snap_labels)
-    print(header)
-    print("-" * len(header))
-
-    # Status markers
-    markers = {
-        "functional": "✓",
-        "broken": "✗",
-        "stressed": "~",
-        "repaired": "↑",
-        "unknown": "?",
-    }
 
     for pipe in pipes:
+        events = db.execute(
+            "SELECT source_date, status, evidence, source_url FROM event WHERE pipe_id = ? ORDER BY source_date",
+            (pipe["id"],),
+        ).fetchall()
+
         indent = "  " * pipe["depth"]
-        label = pipe["description"][:pipe_w - len(indent) - 5]
-        stack_tag = f"[{pipe['stack'][0]}]" if pipe["stack"] else "   "
-        row = f"{indent}{stack_tag} {label:<{pipe_w - len(indent) - 4}}"
+        tag = f"[{pipe['stack'][0]}]" if pipe["stack"] else "   "
+        desc = pipe["description"][:50]
+        print(f"{indent}{tag} {desc}")
 
-        for snap in snapshots:
-            state = db.execute(
-                "SELECT status FROM pipe_state WHERE pipe_id = ? AND snapshot_id = ?",
-                (pipe["id"], snap["id"]),
-            ).fetchone()
-            marker = markers.get(state["status"], " ") if state else " "
-            row += f"{marker:^{col_w}}"
+        if not events:
+            print(f"{indent}    (no events)")
+        else:
+            for e in events:
+                markers = {"functional": "✓", "broken": "✗", "stressed": "~", "repaired": "↑", "unknown": "?"}
+                m = markers.get(e["status"], " ")
+                print(f"{indent}    {e['source_date']}  {m} {e['status']:<10}  {e['evidence'][:60]}")
 
-        print(row)
+        print()
 
     db.close()
 
 
-def show_trajectory(company_id):
-    """Show state transitions for each pipe across snapshots."""
+def show_transitions(company_id):
+    """Show only pipes whose status changed — the interesting arcs."""
     db = _db()
-
-    snapshots = db.execute(
-        "SELECT id, label FROM snapshot WHERE company_id = ? ORDER BY date_start",
-        (company_id,),
-    ).fetchall()
 
     pipes = db.execute(
         "SELECT id, description, stack, site FROM pipe WHERE company_id = ? ORDER BY depth, id",
@@ -174,29 +136,26 @@ def show_trajectory(company_id):
     ).fetchall()
 
     for pipe in pipes:
-        states = []
-        for snap in snapshots:
-            state = db.execute(
-                "SELECT status, evidence FROM pipe_state WHERE pipe_id = ? AND snapshot_id = ?",
-                (pipe["id"], snap["id"]),
-            ).fetchone()
-            if state:
-                states.append((snap["label"], state["status"], state["evidence"]))
+        events = db.execute(
+            "SELECT source_date, status, evidence FROM event WHERE pipe_id = ? ORDER BY source_date",
+            (pipe["id"],),
+        ).fetchall()
 
-        if not states:
+        if len(events) < 2:
             continue
 
-        # Check for transitions
         transitions = []
-        for i in range(1, len(states)):
-            if states[i][1] != states[i - 1][1]:
-                transitions.append(f"{states[i-1][0]}({states[i-1][1]}) → {states[i][0]}({states[i][1]})")
+        for i in range(1, len(events)):
+            if events[i]["status"] != events[i - 1]["status"]:
+                transitions.append(
+                    f"  {events[i-1]['source_date']} {events[i-1]['status']} → {events[i]['source_date']} {events[i]['status']}"
+                )
 
         if transitions:
             tag = f"[{pipe['stack'][0]}]" if pipe["stack"] else "   "
             print(f"{tag} {pipe['description']}")
             for t in transitions:
-                print(f"    {t}")
+                print(t)
             print()
 
     db.close()
@@ -220,25 +179,25 @@ def show_scorecard():
 if __name__ == "__main__":
     import sys
     if len(sys.argv) < 2:
-        print("Usage: diagnose.py [temporal TICKER | trajectory TICKER | scorecard]")
+        print("Usage: diagnose.py [timeline TICKER | transitions TICKER | scorecard]")
         sys.exit(1)
 
     cmd = sys.argv[1]
     db = _db()
 
-    if cmd in ("temporal", "trajectory") and len(sys.argv) >= 3:
+    if cmd in ("timeline", "transitions") and len(sys.argv) >= 3:
         row = db.execute("SELECT id FROM company WHERE ticker = ?", (sys.argv[2].upper(),)).fetchone()
         db.close()
         if not row:
             print(f"Company {sys.argv[2]} not found.")
             sys.exit(1)
-        if cmd == "temporal":
-            show_temporal(row["id"])
+        if cmd == "timeline":
+            show_timeline(row["id"])
         else:
-            show_trajectory(row["id"])
+            show_transitions(row["id"])
     elif cmd == "scorecard":
         db.close()
         show_scorecard()
     else:
         db.close()
-        print("Usage: diagnose.py [temporal TICKER | trajectory TICKER | scorecard]")
+        print("Usage: diagnose.py [timeline TICKER | transitions TICKER | scorecard]")

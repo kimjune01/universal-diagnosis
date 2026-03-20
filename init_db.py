@@ -52,19 +52,8 @@ def init():
     batch = _add_pipe(db, capr_id, "Strategic decisions between trials", "consolidate", "batch_process", root)
     write = _add_pipe(db, capr_id, "Changes to molecule, manufacturing, trial design", "consolidate", "write_substrate", root)
 
-    # Seed snapshots for CAPR (4 temporal snapshots from smoke test findings)
-    snapshots = [
-        ("ALLSTAR era", "2012-01-01", "2017-06-30"),
-        ("HOPE-1 era", "2016-01-01", "2019-12-31"),
-        ("HOPE-2 / BLA era", "2018-01-01", "2025-07-11"),
-        ("HOPE-3 era", "2022-01-01", "2025-12-31"),
-    ]
-
-    for label, start, end in snapshots:
-        db.execute(
-            "INSERT INTO snapshot (company_id, label, date_start, date_end) VALUES (?, ?, ?, ?)",
-            (capr_id, label, start, end),
-        )
+    # No pre-seeded snapshots — the temporal graph grows from events.
+    # Events are public records with archival dates. Agents discover them.
 
     # Seed known traumas for CAPR
     traumas = [
@@ -88,7 +77,7 @@ def init():
     print(f"Database initialized at {DB_PATH}")
     print(f"  {db.execute('SELECT count(*) FROM company').fetchone()[0]} companies")
     print(f"  {db.execute('SELECT count(*) FROM pipe').fetchone()[0]} pipes")
-    print(f"  {db.execute('SELECT count(*) FROM snapshot').fetchone()[0]} snapshots")
+    print(f"  {db.execute('SELECT count(*) FROM event').fetchone()[0]} events")
     print(f"  {db.execute('SELECT count(*) FROM trauma').fetchone()[0]} traumas")
     db.close()
 

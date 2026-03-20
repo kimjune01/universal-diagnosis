@@ -373,8 +373,22 @@ Slide the window, repeat. Different test operations on the same sequence yield d
 - Falsifiability contract: DB record is the prediction, resolution is mechanical, SOAP is disposable
 - Public repo: github.com/kimjune01/universal-diagnosis
 
+## 2026-03-20: Event-based temporal graph (drop snapshots)
+
+Snapshots were pre-defined eras — a narrative lever. Replaced with events: each event is a public record with an archival date. The temporal graph grows one event at a time. No pre-seeded eras, no agent discretion on boundaries.
+
+**Changes:**
+- schema.sql: dropped `snapshot` and `pipe_state` tables, added `event` table (pipe_id, source_date, status, evidence, source_url)
+- diagnose.py: `timeline TICKER` (event stream per pipe), `transitions TICKER` (status changes only)
+- Agent prompts: output EVENT records with archival dates, not PIPE_STATE per snapshot
+- Merge prompt: event timeline table instead of snapshot grid
+- init_db.py: no snapshot seeding, events start empty
+
+Peters' framework still applies: composition = combine consecutive events, test = check property on compound. But the events are grounded in archival dates of public records, not in researcher-defined eras.
+
 **Next:**
-- Re-dispatch CAPR with temporal framing (proper Run 0)
+- Commit, push
+- Re-dispatch CAPR with event-based temporal framing (proper Run 0)
 - Complete QURE Run 0
 - Freeze commit
 - Run 1: SPRB, ATYR, INMB

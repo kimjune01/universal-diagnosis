@@ -14,13 +14,13 @@ Produce a SOAP note with the temporal graph embedded:
 What the company and analysts said. Management narrative vs. analyst thesis. One paragraph.
 
 ### O (Objective)
-The temporal graph as a table:
+The event timeline — all events from both reports, merged chronologically:
 
-| Pipe | Snapshot 1 | Snapshot 2 | ... | Snapshot N |
-|------|-----------|-----------|-----|-----------|
-| [handoff/stage] | status | status | ... | status |
+| Date | Pipe | Status | Evidence | Source |
+|------|------|--------|----------|--------|
+| YYYY-MM-DD | [pipe] | [status] | [one line] | [URL] |
 
-Then list key hard data points (trial results, FDA actions, financial metrics) with sources.
+Then highlight transitions: events where status changed on the same pipe.
 
 ### A (Assessment)
 Framework diagnosis:
