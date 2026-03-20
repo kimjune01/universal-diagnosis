@@ -544,6 +544,40 @@ Shkreli says "will be approved" — that's a forward pass call. The framework sa
 ### Meta-level trauma recurrence (noted but not scored)
 The molecule has outlived BioMarin (deprioritized) and Allievex (bankrupt). The recurring failure class isn't scientific — it's "company dies trying to commercialize this specific drug." Spruce is attempt #3. This is a pipe-level trauma recurrence that the company-level analysis doesn't capture. Worth tracking.
 
+## 2026-03-20: ATYR Run 1 — second prospective prediction
+
+### Agent results
+All four returned strong data. Key findings:
+- filter_attend is broken (Phase 3 primary miss) but the endpoint was wrong, not the drug
+- read_outcomes is functional — management acknowledged the miss honestly, presented secondaries at ERS
+- write_substrate is pending — no new trial registered, FDA Type C meeting mid-April is the gating event
+- Cash $80.9M, ~4Q runway, but new Phase 3 would need dilution at $0.85/share
+- Shkreli shorted, predicted 80% crash — which happened, but for endpoint reasons not drug reasons
+
+### Merge disagreement (second time)
+SOAP-A: dying_pivoted, **PASS** — asset concentration pushes announcement, FDA meeting + 5 months is enough time
+SOAP-B: dying_pivoted, **FAIL** — Type C necessary but not sufficient, fast alignment unlikely
+
+Per protocol: **soap-a is primary (PASS).**
+
+### Prediction record (ATYR)
+- Company: ATYR
+- Type: fix (endpoint pivot from steroid dose to QoL)
+- Category: dying_pivoted
+- Direction: PASS
+- Catalyst: aTyr announces a new sarcoidosis clinical trial (any phase, any design)
+- Resolution source: aTyr Pharma press release or SEC 8-K
+- Window start: 2026-04-01
+- Window end: 2026-09-30
+- Pass condition: Press release or 8-K announcing a new sarcoidosis clinical trial
+- Reasoning: Consolidate stack is functional at read_outcomes (honest reading, ERS presentation) and batch_process (FDA engagement, no panic pivot). Write_substrate pending FDA Type C meeting mid-April. If FDA provides even moderately constructive feedback, asset concentration and incentive alignment push the company to announce a new trial. Timeline: Type C April → minutes May → announcement June-August → within window.
+
+### Framework vs Shkreli
+Shkreli: short, "really bad drug" — forward pass critique
+Framework: drug works on QoL endpoints, endpoint choice was wrong (filter_attend broken), consolidate stack is functional enough to pivot. Predicts PASS on new trial announcement — company will learn from the miss and iterate.
+
+This is the inverse of QURE: both had Phase 3 issues with the FDA. QURE fought the feedback (read_outcomes broken → dying_dying). ATYR is engaging constructively (read_outcomes functional → dying_pivoted). The framework predicts different outcomes for the same superficial situation based on consolidate stack health.
+
 **Next:**
-- Commit SPRB artifacts
-- ATYR next
+- Commit ATYR artifacts
+- INMB last
