@@ -265,11 +265,12 @@ Run 1 (prospective, primary endpoint): Framework and Shkreli accuracy on the sam
 - **Shkreli position**: Bull (long, targets $500, "will be approved")
 
 ### ATYR (aTyr Pharma)
-- **Catalyst**: FDA Type C meeting outcome for efzofitimod in pulmonary sarcoidosis (EFZO-FIT Phase 3 missed primary endpoint; meeting determines regulatory path forward)
+- **Catalyst**: aTyr announces intent to initiate a new clinical trial for efzofitimod in sarcoidosis following FDA Type C meeting (mid-April 2026)
 - **Source**: aTyr Pharma press release via investors.atyrpharma.com or SEC 8-K filing
-- **Window**: by 2026-06-30 (company guidance: mid-April 2026 meeting, results disclosed shortly after)
-- **PASS condition**: FDA confirms a viable regulatory path forward (e.g., agrees to accept secondary endpoints, allows supplemental filing, or requests additional trial with defined path)
-- **FAIL condition**: FDA does not provide a viable path forward (e.g., requires full new Phase 3 with no agreed endpoint)
+- **Window**: by 2026-09-30 (Type C meeting mid-April, FDA minutes within 30 days, 8-K within 4 business days of material event, then company decision within one quarter)
+- **PASS condition**: aTyr issues a press release or 8-K announcing a new sarcoidosis trial (any phase) with FDA alignment
+- **FAIL condition**: No such announcement by window end
+- **Rationale**: This tests the consolidate stack (Read → Batch Process → Write Substrate). The FDA meeting is the Read. The company's decision is the Batch Process. Announcing a new trial is the Write — the company committing to a new iteration. If the consolidate stack is functional, the company reads the feedback, processes it, and writes a new trial back to the substrate. If broken, they stall, pivot away from sarcoidosis, or go silent.
 - **Shkreli position**: Bear (short, predicted 80% crash)
 
 ### INMB (Inmune Bio)

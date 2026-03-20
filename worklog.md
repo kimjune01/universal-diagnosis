@@ -315,6 +315,14 @@ Codex reviewed temporal schema + prompts. Verdict: "good conceptual sketch, weak
 - `diagnosis` table for SOAP artifacts — SOAP notes stay as files, not DB records. Declared disposable in prereg.
 - `confidence` field on pipe_state — "functional but untested" gets mapped to nearest enum value. Noted in agent prompts.
 
+## 2026-03-20: ATYR catalyst hardened
+
+Codex sniff test #4 flagged ATYR as not falsifiable — "FDA confirms a viable regulatory path" requires judgment. Researched the timing chain: Type C meeting mid-April → FDA minutes within 30 days → 8-K within 4 business days.
+
+Replaced with B1: "aTyr announces intent to initiate a new sarcoidosis trial." This is binary (announced or not), tests the consolidate stack specifically (Read FDA feedback → Process → Write new trial), and has a clean window (by 2026-09-30).
+
+B2 (actual ClinicalTrials.gov registration) was considered but tests execution, not learning. We want to test the learning loop.
+
 ### Next
-- Rebuild DB, verify schema
+- Fix remaining codex issues (merge prompt fields, analyst_call schema, QURE catalyst)
 - Re-dispatch CAPR with temporal framing
