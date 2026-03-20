@@ -386,9 +386,35 @@ Snapshots were pre-defined eras — a narrative lever. Replaced with events: eac
 
 Peters' framework still applies: composition = combine consecutive events, test = check property on compound. But the events are grounded in archival dates of public records, not in researcher-defined eras.
 
+## 2026-03-20: CAPR Run 0 (event-based) complete
+
+### Results
+Both codex merges agree: **Category: dying_pivoted, Direction: PASS.**
+
+Same conclusion as smoke test, but the event-based framing produced:
+- ~60 dated events (vs. ~4 static snapshots in smoke test)
+- Archival dates from source documents (vs. estimated era labels)
+- Explicit trauma recurrence disagreement surfaced (Consol-A: no, Consol-B: yes)
+- New evidence not found in smoke test: CADUCEUS 2012, Xie integrin 2014, DSMB futility pass 2023, Vinay Prasad angle, pre-BLA CMC meeting 2024
+
+### Delta from smoke test
+The temporal framing added granularity but not a different conclusion. The dying_pivoted trajectory is the same story told with more resolution. The key value-add: the trauma recurrence disagreement. Static framing said "no recurrence" uniformly. Event-based framing revealed a legitimate split — the management spin gap (CRL + securities fraud) could be read as same-class recurrence of overconfident interpretation, even though the scientific failure classes are different.
+
+This is exactly what Peters' framework enables: same node set, different test operations yield different stories. The test "did the same scientific failure recur?" says no. The test "did the same communication failure recur?" says yes. Both are valid. The merge surfaces both.
+
+### Prediction record (per protocol, soap-a is primary)
+- Company: CAPR
+- Type: Run 0 retrospective
+- Category: dying_pivoted
+- Direction: PASS
+- Catalyst: HOPE-3 Phase 3 topline readout
+- Resolution source: Capricor press release / SEC 8-K (2025-12-03)
+- Window: 2025-10-01 to 2025-12-31
+- Pass condition: PUL v2.0 total score statistically significant
+- Outcome: HIT (known)
+
 **Next:**
-- Commit, push
-- Re-dispatch CAPR with event-based temporal framing (proper Run 0)
+- Commit all CAPR Run 0 artifacts
 - Complete QURE Run 0
 - Freeze commit
 - Run 1: SPRB, ATYR, INMB
