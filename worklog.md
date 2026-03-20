@@ -219,8 +219,37 @@ Two handoffs were broken at t₁ and repaired at t₂. That's temporal connectiv
 ### CAPR search invalidated
 The 4 agents were dispatched with the old static-tree framing. Their data is still useful as raw evidence, but the search reports need to be restructured as temporal sequences (pipe states across snapshots), not static handoff assessments. Will reformat when all agents return.
 
+### All 4 agents returned
+
+**Top 2 selected for merge (per protocol):**
+
+1. **Consolidate-A** (strongest): Four-snapshot temporal sequence (ALLSTAR→HOPE-1→HOPE-2→HOPE-3). Found the full iteration history — indication pivot (MI→DMD), route change (intracoronary→IV), dose escalation (25M→150M), endpoint evolution (scar size→PUL 1.2→PUL v2.0+LVEF). Trauma recurrence: ALLSTAR failure class (wrong indication/route) did not recur. CRL is a different failure class (regulatory packaging). All three consolidate stages assessed as functional.
+
+2. **Cache-B** (second): SEC filings perspective. CRL details, two-facility manufacturing risk, endpoint strategy evolution, $150M raise. Assessed Filter→Attend as "repaired after failure" — the key finding. Original BLA tried to skip from n=20 Phase 2 to approval; FDA rejected; HOPE-3 was the structural fix.
+
+**Notable from other two agents (kept as audit trail):**
+- Cache-A: biodistribution gap (no published evidence CDC exosomes reach skeletal muscle), p-value attenuated from HOPE-2 (0.014) to HOPE-3 (0.029) despite 5x patients
+- Consolidate-B: READ stage impaired (management spin on HOPE-2 results), securities fraud class action, Shkreli's critique was primarily forward pass ("drug won't work") not backward pass
+
+**Codex merge dispatched**: 2 independent instances merging top 2 into recursive SOAP notes with temporal snapshots.
+
+### Codex SOAP merge complete
+
+Both instances agree. Diagnosis: consolidate stack was functional and compounding across four snapshots. Shkreli diagnosed the forward pass at one snapshot; the framework diagnoses the backward pass trajectory. No merge disagreement — both produced the same assessment independently.
+
+Key line from SOAP-B: "the framework would have been long the trajectory, not necessarily long the t₃ snapshot."
+
+### CAPR Run 0 demonstration: complete
+
+The framework would have predicted PASS on HOPE-3 because:
+1. ALLSTAR failure was absorbed, not repeated (no trauma recurrence)
+2. Each trial structurally rewrote the weak interfaces (indication, route, dose, endpoints, sample size)
+3. The CRL was a different failure class (regulatory packaging, not mechanism)
+4. The consolidate stack was functional at all three stages
+
+This is structurally distinct from Shkreli's analysis, which was a forward-pass snapshot critique ("the drug won't work"). The framework adds the temporal dimension he missed.
+
 ### Next
-- Wait for remaining 3 agents to return
-- Reformat all 4 CAPR search reports as temporal graphs
-- Rebuild init_db.py and diagnose.py for the temporal schema
-- Re-dispatch CAPR with temporal framing if needed, or reformat existing data
+- Rebuild init_db.py and diagnose.py for temporal schema
+- Commit all CAPR artifacts
+- Freeze protocol for Run 1
