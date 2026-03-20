@@ -298,3 +298,11 @@ Run 1 (prospective, primary endpoint): Framework and Shkreli accuracy on the sam
 - The diagnostician is not blind to analyst consensus. Mitigated by publishing framework diagnosis before looking up analyst positions where possible.
 - We are predicting process (will the company iterate effectively?), not product (will the drug work?). If the drug fails for biological reasons unrelated to the learning loop, the prediction must still resolve as PASS or FAIL on the stated catalyst — no special exemptions.
 - **Cash as escape hatch**: A broken consolidate stack does not mean immediate death. Cash runway is the timer. Death predictions must specify cash runway as the upper bound on survival time.
+
+## Appendix: Smoke test as controlled comparison
+
+CAPR was diagnosed twice: once with static-tree framing (smoke test, stashed in `smoke-test/CAPR/`), once with event-based temporal framing (proper Run 0). Both use the same company, same evidence sources, same 4-agent protocol, same codex merge. The only difference is the prompt framing — static snapshots vs. dated events.
+
+The delta between the two outputs measures what the temporal graph adds. If the event-based diagnosis produces the same conclusion as the static one, the temporal framing is overhead. If it produces a structurally different or more precise diagnosis, the framing is load-bearing.
+
+This is not a formal comparison — it's a learning artifact. The smoke test was not designed as a control. But the natural experiment is worth documenting.
