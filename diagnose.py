@@ -61,12 +61,13 @@ def add_prediction(
     catalyst, resolution_source, window_start, window_end,
     pass_condition, reasoning, run,
 ):
-    """Record a prediction. Returns prediction id."""
+    """Record and publish a prediction. Sets published_at to now. Returns prediction id."""
     db = _db()
     cur = db.execute(
         "INSERT INTO prediction (company_id, pipe_id, type, category, direction, "
-        "catalyst, resolution_source, window_start, window_end, pass_condition, reasoning, run) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "catalyst, resolution_source, window_start, window_end, pass_condition, "
+        "reasoning, run, published_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))",
         (company_id, pipe_id, pred_type, category, direction,
          catalyst, resolution_source, window_start, window_end,
          pass_condition, reasoning, run),
@@ -77,12 +78,12 @@ def add_prediction(
     return pid
 
 
-def add_analyst_call(prediction_id, analyst_name, position, source_url=None, call_date=None):
-    """Record an analyst's position."""
+def add_analyst_call(prediction_id, analyst_name, direction, source_url=None, call_date=None):
+    """Record an analyst's position. One per prediction (UNIQUE constraint)."""
     db = _db()
     cur = db.execute(
-        "INSERT INTO analyst_call (prediction_id, analyst_name, position, source_url, call_date) VALUES (?, ?, ?, ?, ?)",
-        (prediction_id, analyst_name, position, source_url, call_date),
+        "INSERT INTO analyst_call (prediction_id, analyst_name, direction, source_url, call_date) VALUES (?, ?, ?, ?, ?)",
+        (prediction_id, analyst_name, direction, source_url, call_date),
     )
     db.commit()
     cid = cur.lastrowid

@@ -104,19 +104,22 @@ CREATE TABLE IF NOT EXISTS prediction (
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- Analyst positions for head-to-head comparison
+-- Analyst position for head-to-head comparison (one per prediction)
 CREATE TABLE IF NOT EXISTS analyst_call (
     id INTEGER PRIMARY KEY,
-    prediction_id INTEGER NOT NULL REFERENCES prediction(id),
+    prediction_id INTEGER NOT NULL UNIQUE REFERENCES prediction(id),  -- one call per prediction
     analyst_name TEXT NOT NULL,
-    position TEXT NOT NULL,             -- what they predicted
+    direction TEXT NOT NULL             -- mapped to same enum as prediction
+        CHECK(direction IN ('pass', 'fail')),
     source_url TEXT,
     call_date TEXT,
-    outcome TEXT CHECK(outcome IN ('correct', 'incorrect', 'void', 'pending')),
+    outcome TEXT CHECK(outcome IN ('hit', 'miss', 'void', 'pending'))
+        DEFAULT 'pending',
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 -- Scorecard view
+-- Scorecard: only published predictions, one analyst call per prediction
 CREATE VIEW IF NOT EXISTS scorecard AS
 SELECT
     p.id AS prediction_id,
@@ -124,17 +127,19 @@ SELECT
     c.name AS company_name,
     p.type,
     p.category,
-    p.direction,
+    p.direction AS framework_direction,
     p.catalyst,
     p.window_end,
     p.pass_condition,
     p.reasoning,
     p.run,
+    p.published_at,
     p.outcome AS framework_outcome,
     a.analyst_name,
-    a.position AS analyst_position,
+    a.direction AS analyst_direction,
     a.outcome AS analyst_outcome
 FROM prediction p
 JOIN company c ON c.id = p.company_id
 LEFT JOIN analyst_call a ON a.prediction_id = p.id
+WHERE p.published_at IS NOT NULL
 ORDER BY p.window_end;
