@@ -455,7 +455,45 @@ Falsifiable, binary, mechanically scorable (compare press release to FDA letter)
 
 The framework's value-add isn't just PASS/FAIL on catalysts. It's diagnosing *which pipe is broken* and predicting the consequences of the specific break. A broken read_outcomes pipe doesn't mean the drug fails — it means the company's self-assessment is unreliable, which makes the market's information about the company's information wrong. That's a second-order prediction no analyst framework produces.
 
+## 2026-03-20: QURE Run 0 complete
+
+### Results
+Both codex merges agree: **Category: dying_dying.**
+
+QURE is the mirror image of CAPR:
+- **CAPR**: forward pass broken → company learned → repaired → dying_pivoted → PASS
+- **QURE**: forward pass functional → company didn't learn → broke further → dying_dying → FAIL (on regulatory path)
+
+The drug works (75% slowing on cUHDRS, p=0.003). The company's consolidate stack is broken:
+- **read_outcomes**: recurring failure. Management overread FDA alignment (Dec 2024), didn't detect the shift (Nov 2025), then fought the feedback instead of pivoting. FDA eventually went public calling the data "distorted" and "manipulated" (Mar 2026).
+- **batch_process**: mixed. Some real scientific work (CHDI propensity score paper). But management's primary response was arguing FDA inconsistency and raising ethical objections to sham trials — defending the methodology rather than rewriting it.
+- **write_substrate**: stressed. $622.5M cash (runway to 2029) but no Phase 3 registered. Manufacturing divested. Securities fraud class actions filed.
+
+### Trauma recurrence
+All agents found same_class: yes. The recurrence goes deeper than Nov 2025 → Mar 2026. Consolidate-A found the root: FDA's October 2022 guidance explicitly said "we generally do not encourage external controls." uniQure built their entire BLA strategy on external controls anyway. Three years of ignoring published rules.
+
+### Prediction record
+- Company: QURE
+- Type: recurrence (read_outcomes overframing pattern)
+- Category: dying_dying
+- Direction: PASS on topline (drug worked), FAIL on regulatory path (BLA blocked)
+- Catalyst: AMT-130 Phase I/II topline readout
+- Resolution source: uniQure press release (Sep 24 2025)
+- Window: 2025-08-01 to 2025-10-31
+- Pass condition: cUHDRS statistically significant
+- Outcome: HIT on topline (p=0.003). But the framework would have predicted the regulatory collapse that followed — the consolidate stack was already broken.
+
+### CAPR vs QURE: the framework's value-add
+Both companies had positive topline data. The difference is the consolidate stack:
+- CAPR: functional. Read the CRL, processed it, wrote a proper Phase 3. Outcome: approval path restored.
+- QURE: broken. Read the FDA reversal, fought it, relationship collapsed. Outcome: stock -84%, class actions, "lied" in headlines.
+
+A snapshot analyst sees two companies with positive data. The framework sees one with a functional learning loop and one without. That's the structural distinction the prereg asks for.
+
+### Shkreli comparison
+Shkreli was long QURE (correct on the drug, wrong on the company). He sold Nov 2025 before the break — but for unrelated reasons, not because he diagnosed the consolidate stack. The framework would have flagged the risk earlier: the external control methodology was always the vulnerability, and the FDA's 2022 guidance was the first event.
+
 **Next:**
-- Complete QURE Run 0
+- Commit QURE artifacts
 - Freeze commit
 - Run 1: SPRB, ATYR, INMB
