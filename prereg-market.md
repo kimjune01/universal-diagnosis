@@ -13,25 +13,41 @@ The Shkreli prereg asks: does the framework beat one analyst? This prereg asks: 
 - Shkreli comparison: framework direction vs. one expert's direction
 - Market comparison: framework diagnosis vs. market-implied probability
 
-## Hypothesis
+## Hypotheses
+
+### H1: Direction — framework beats market-implied probability
+
+The market prices a probability of success into the stock before each catalyst. The framework makes a binary PASS/FAIL prediction. If the framework's hit rate exceeds the market's implied accuracy, the framework sees directional information the market doesn't.
+
+Market-implied probability: estimated from pre-catalyst stock price relative to post-catalyst scenarios (binary event pricing) or from options skew if available.
+
+### H2: Vol — broken read_outcomes predicts higher surprise
 
 Companies diagnosed with broken read_outcomes pipes (management overframing pattern) exhibit higher realized-to-implied volatility ratios around catalyst dates than companies with functional read_outcomes. The market underprices surprise because it calibrates to management's framing.
 
 ## Design
 
-For each company-catalyst pair already in the scorecard (Phase 1 + Phase 2):
+For each company-catalyst pair in the scorecard (Phase 1 + Phase 2):
 
+### H1 data collection (direction)
+1. **Before the catalyst**: estimate market-implied probability of success. Methods (use best available):
+   - Binary event pricing: `P(success) = (current price - fail price) / (success price - fail price)` using analyst price targets or historical move-on-miss as the fail scenario
+   - Options-implied: if binary options or tight-expiry straddles exist, derive implied probability from put/call pricing
+2. **After the catalyst**: record actual outcome (PASS/FAIL)
+3. **Score**: framework prediction vs. market-implied direction (was market pricing >50% success or <50%?)
+
+### H2 data collection (vol)
 1. **Before the catalyst**: pull 30-day implied volatility from listed options
 2. **After the catalyst**: compute 5-day realized volatility around the event
 3. **Compute**: realized/implied ratio
-4. **Segment**: by read_outcomes status (broken vs. functional, from the framework's diagnosis)
+4. **Segment**: by read_outcomes status (broken vs. functional)
 5. **Test**: do broken read_outcomes companies have higher ratios?
 
-## What "beating the market" means here
+### What "beating the market" means
 
-The framework doesn't predict stock direction. It predicts *surprise magnitude*. A company with broken read_outcomes has a wider gap between management's framing and reality. The market, calibrating to management's framing, underestimates the possible move. Realized vol > implied vol.
+**On direction**: the framework predicts PASS or FAIL. The market prices a probability. If the framework is right more often than the market's implied probability, it has directional edge.
 
-This is testable without taking directional positions. It's a statement about information quality, not stock price.
+**On vol**: the framework predicts which companies will surprise. A broken read_outcomes pipe means management framing is unreliable, so the market's expectation is miscalibrated. The realized move will be larger than priced.
 
 ## Sample
 
@@ -51,10 +67,17 @@ Every company-catalyst pair from:
 
 ## Scoring
 
+### H1: Direction
+- **Primary metric**: framework accuracy vs. market-implied accuracy on the same catalysts
+- **Market-implied accuracy**: if market priced >50% success and catalyst succeeded, market was "right" (and vice versa)
+- **Statistical test**: McNemar's test (paired, same as Shkreli comparison)
+- **Minimum N**: 10 before reporting
+
+### H2: Vol
 - **Primary metric**: mean realized/implied vol ratio, segmented by read_outcomes status (broken vs. functional)
 - **Statistical test**: two-sample t-test or Mann-Whitney U
 - **Minimum group size**: 5 per group before reporting
-- **Significance threshold**: p < 0.05
+- **Significance threshold**: p < 0.05 for both
 
 ## Predictions from Phase 1
 
@@ -85,11 +108,11 @@ All three Phase 1 companies had broken read_outcomes and large catalyst surprise
 
 ## Success criterion
 
-**Descriptive**: report realized/implied ratios per company, segmented by read_outcomes status.
+**H1 (direction)**: framework accuracy > market-implied accuracy at p < 0.05. Descriptive until N >= 10.
 
-**Inferential** (if groups reach N >= 5 each): broken > functional at p < 0.05.
+**H2 (vol)**: broken read_outcomes group has higher realized/implied ratio than functional group at p < 0.05. Descriptive until N >= 5 per group.
 
-**Practical significance**: if broken read_outcomes companies average 2x+ realized/implied ratio while functional companies average < 1.5x, the framework identifies tradeable vol mispricing.
+**Practical significance**: if the framework beats the market on direction AND identifies vol mispricing, it captures information asymmetry on two independent dimensions. Either hypothesis can succeed or fail independently.
 
 ## Commitment
 
