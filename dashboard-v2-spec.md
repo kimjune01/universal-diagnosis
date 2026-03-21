@@ -159,6 +159,32 @@ If no event exists for a pipe at the selected time, show `—` (no data yet).
 
 Status colors: green=functional, red=broken, yellow=stressed, blue=repaired, gray=unknown.
 
+### Health indicator (top-right corner, fixed)
+
+Skeuomorphic status light. A circular indicator with a glass-like bezel, inner glow, and subtle shadow — like a physical LED on a piece of equipment.
+
+Four colors mapped to trajectory category:
+- `living_well` → **green** glow
+- `dying_pivoted` → **amber/yellow** glow
+- `living_dying` → **orange** glow (looks healthy but fading)
+- `dying_dying` → **red** glow
+
+The light pulses gently if the outcome is pending. Solid if resolved. Below the light, the category label in small monospace text.
+
+```css
+/* Skeuomorphic LED */
+.health-light {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.4), transparent 60%),
+              radial-gradient(circle, var(--glow-color), var(--glow-color-dark));
+  box-shadow: 0 0 8px var(--glow-color), inset 0 1px 2px rgba(255,255,255,0.3);
+  border: 2px solid #333;
+}
+```
+
+Fixed position, top-right corner, doesn't scroll. Updates when you change company or time-travel to a different event.
+
 ### Prediction card (sidebar, below pipes)
 
 ```
