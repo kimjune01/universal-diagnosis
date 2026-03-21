@@ -1,6 +1,6 @@
 # Pre-registration: Framework vs. Market
 
-**Status**: Draft. Depends on Phase 2 resolution and options data availability.
+**Status**: Draft. Not ready to execute. Six codex-identified blockers remain (see bottom). Depends on Phase 2 resolution, options data availability, and fixing the statistical design.
 
 ## Research question
 
@@ -120,3 +120,12 @@ All three Phase 1 companies had broken read_outcomes and large catalyst surprise
 - Report ratios regardless of direction
 - Acknowledge if the pattern doesn't hold
 - Do not trade on this until the backtest confirms the pattern (this is research, not advice)
+
+## Outstanding blockers (codex review, March 20 2026)
+
+1. **H1 statistical design broken**: comparing binary framework call to market probability via McNemar doesn't work. Need Brier score or redefine H1 as pure sign classification.
+2. **Market benchmark too discretionary**: "use best available" allows method shopping. Need one locked estimator, one formula, one timestamp.
+3. **H2 horizon mismatch**: 30-day IV vs 5-day realized vol aren't comparable. Need event-window implied move (nearest expiry ATM straddle) vs realized absolute return.
+4. **H2 grouping variable not operationalized**: broken/functional binary doesn't account for stressed/repaired/unknown/mixed. Need a locked mapping rule.
+5. **Catalyst definitions inconsistent across files**: QURE treated as topline in backtest prereg but as FDA reversal in market prereg. Must lock to one event.
+6. **H2 sample too small for confirmatory test**: all Phase 1 companies have broken read_outcomes. Need functional-read_outcomes companies for comparison. Label H2 as exploratory until sample grows.
