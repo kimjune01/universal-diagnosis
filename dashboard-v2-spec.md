@@ -183,6 +183,13 @@ The light pulses gently if the outcome is pending. Solid if resolved. Below the 
 }
 ```
 
+Adjacent to the LED, a small runway counter in months: `14mo` in the same color as the glow. If runway < 6 months, the number pulses with the light.
+
+```
+                    ● 14mo
+              dying_pivoted
+```
+
 Fixed position, top-right corner, doesn't scroll. Updates when you change company or time-travel to a different event.
 
 ### Prediction card (sidebar, below pipes)
