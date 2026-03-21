@@ -16,17 +16,16 @@ def export():
         SELECT
             c.ticker,
             p.run,
+            p.arm,
             p.category,
-            p.direction AS direction,
+            p.direction,
             p.catalyst,
             p.window_end,
-            a.direction AS analyst_direction,
             p.outcome
         FROM prediction p
         JOIN company c ON c.id = p.company_id
-        LEFT JOIN analyst_call a ON a.prediction_id = p.id
         WHERE p.published_at IS NOT NULL
-        ORDER BY p.window_end
+        ORDER BY p.catalyst, c.ticker, p.arm
     """).fetchall()
 
     predictions = [dict(r) for r in rows]

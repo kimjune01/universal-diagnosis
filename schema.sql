@@ -69,15 +69,18 @@ CREATE TABLE IF NOT EXISTS trauma_embedding (
 
 -- A prediction generated from diagnosis
 -- The prediction is the falsifiable artifact. SOAP notes are disposable reasoning.
+-- Three arms per company-catalyst: temporal, snapshot, analyst.
 CREATE TABLE IF NOT EXISTS prediction (
     id INTEGER PRIMARY KEY,
     company_id INTEGER NOT NULL REFERENCES company(id),
     pipe_id INTEGER REFERENCES pipe(id),
-    type TEXT NOT NULL
+    arm TEXT NOT NULL DEFAULT 'temporal'
+        CHECK(arm IN ('temporal', 'snapshot', 'analyst')),
+    type TEXT
         CHECK(type IN ('recurrence', 'cascade', 'fix', 'death', 'mitosis')),
-    category TEXT NOT NULL              -- temporal trajectory diagnosis
+    category TEXT
         CHECK(category IN ('living_well', 'living_dying', 'dying_pivoted', 'dying_dying')),
-    direction TEXT NOT NULL             -- the binary call (derived from category but stored explicitly)
+    direction TEXT NOT NULL             -- the binary call
         CHECK(direction IN ('pass', 'fail')),
     catalyst TEXT NOT NULL,             -- exact event, e.g., "HOPE-3 Phase 3 topline readout"
     resolution_source TEXT NOT NULL,    -- exact source that determines outcome
@@ -95,21 +98,6 @@ CREATE TABLE IF NOT EXISTS prediction (
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- Analyst position for head-to-head comparison (one per prediction)
-CREATE TABLE IF NOT EXISTS analyst_call (
-    id INTEGER PRIMARY KEY,
-    prediction_id INTEGER NOT NULL UNIQUE REFERENCES prediction(id),  -- one call per prediction
-    analyst_name TEXT NOT NULL,
-    direction TEXT NOT NULL             -- mapped to same enum as prediction
-        CHECK(direction IN ('pass', 'fail')),
-    source_url TEXT,
-    call_date TEXT,
-    outcome TEXT CHECK(outcome IN ('hit', 'miss', 'void', 'pending'))
-        DEFAULT 'pending',
-    created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
--- Scorecard view
 -- Financial snapshots for runway calculation
 CREATE TABLE IF NOT EXISTS financial_snapshot (
     id INTEGER PRIMARY KEY,
@@ -121,27 +109,24 @@ CREATE TABLE IF NOT EXISTS financial_snapshot (
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- Scorecard: only published predictions, one analyst call per prediction
+-- Scorecard: all published predictions, three arms per company-catalyst
 CREATE VIEW IF NOT EXISTS scorecard AS
 SELECT
     p.id AS prediction_id,
     c.ticker,
     c.name AS company_name,
+    p.arm,
     p.type,
     p.category,
-    p.direction AS framework_direction,
+    p.direction,
     p.catalyst,
     p.window_end,
     p.pass_condition,
     p.reasoning,
     p.run,
     p.published_at,
-    p.outcome AS framework_outcome,
-    a.analyst_name,
-    a.direction AS analyst_direction,
-    a.outcome AS analyst_outcome
+    p.outcome
 FROM prediction p
 JOIN company c ON c.id = p.company_id
-LEFT JOIN analyst_call a ON a.prediction_id = p.id
 WHERE p.published_at IS NOT NULL
-ORDER BY p.window_end;
+ORDER BY p.catalyst, c.ticker, p.arm;

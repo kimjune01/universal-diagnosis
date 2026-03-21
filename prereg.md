@@ -144,18 +144,16 @@ If the prediction cannot be expressed as PASS/FAIL on a specific catalyst within
 - **Resolution is mechanical**: on the window_end date, check the resolution_source. If the pass_condition is met, outcome = hit. If not, outcome = miss. No judgment, no interpretation, no model in the loop.
 - Every prediction must be fully specified in the DB before the catalyst date. Incomplete records (missing catalyst, source, window, or pass_condition) are not valid predictions and are excluded from the scorecard.
 
-## Analyst benchmark rule
+## Analyst-to-catalyst mapping
 
-For each company, the analyst position is extracted mechanically:
+When Shkreli's position is ticker-level rather than catalyst-specific:
 
-1. Find Shkreli's most recent public statement about the company before the catalyst date
-2. Map to bull/bear/neutral:
-   - **Bull**: long position, price target above current, or explicit "will work/approve" statement
-   - **Bear**: short position, price target below current, or explicit "will fail/not work" statement
-   - **Neutral**: no position or explicitly undecided
-3. Record the source URL and date
+1. If the company has exactly one upcoming binary catalyst within 12 months, map to that catalyst.
+2. If the company has multiple upcoming catalysts, map to the **nearest** binary catalyst after Shkreli's position date.
+3. If no binary catalyst exists within 12 months, exclude the position.
+4. Shkreli bull → PASS. Shkreli bear → FAIL. Neutral → exclude.
 
-This is the only comparator. No consensus aggregation across multiple analysts — one framework prediction vs. one analyst call, same catalyst, same window.
+The analyst prediction is stored as a third arm in the prediction table (arm='analyst'), alongside temporal and snapshot-only predictions, all scored against the same ground truth.
 
 ### Additional baselines
 
@@ -200,10 +198,9 @@ These are public, timestamped, and not subject to interpretation. If the outcome
 ### Resolution rules
 - **Hit**: predicted event occurs within stated window, confirmed by the pre-specified source
 - **Miss**: predicted event does not occur within stated window, or opposite occurs
-- **Void**: ONLY if the catalyst is cancelled entirely (not delayed). Delays are scored as follows:
-  - If the prediction was FAIL and the catalyst is delayed: scored as pending, window extends by one quarter, max one extension
-  - If the prediction was PASS and the catalyst is delayed: scored as pending, same extension rule
-  - If the prediction was about process (recurrence, death, mitosis) and the company delays: the delay itself is evidence and must be evaluated against the prediction
+- **Void**: ONLY if the catalyst is cancelled entirely (company acquired, delisted, or program abandoned before window end). Not counted in accuracy.
+
+Once a catalyst window is defined, it runs to completion. No extensions. All three arms (temporal, snapshot, analyst) are scored against the same ground truth on the same window_end date.
 
 ### Mixed outcomes
 If a trial readout is mixed (e.g., hits secondary endpoint but misses primary), the prediction is scored against the pre-specified source and endpoint. The prediction template requires specifying which endpoint determines resolution.

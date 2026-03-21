@@ -61,18 +61,17 @@ def get_company(ticker: str):
     """, (cid,)).fetchall()
 
     prediction = db.execute("""
-        SELECT id, category, direction, catalyst, resolution_source,
+        SELECT id, arm, category, direction, catalyst, resolution_source,
                window_start, window_end, pass_condition, reasoning, run, outcome
-        FROM prediction WHERE company_id = ? AND published_at IS NOT NULL
+        FROM prediction WHERE company_id = ? AND arm = 'temporal' AND published_at IS NOT NULL
         LIMIT 1
     """, (cid,)).fetchone()
 
-    analyst = None
-    if prediction:
-        analyst = db.execute(
-            "SELECT analyst_name, direction, source_url, call_date FROM analyst_call WHERE prediction_id = ?",
-            (prediction["id"],),
-        ).fetchone()
+    analyst = db.execute("""
+        SELECT direction, catalyst, reasoning, outcome
+        FROM prediction WHERE company_id = ? AND arm = 'analyst' AND published_at IS NOT NULL
+        LIMIT 1
+    """, (cid,)).fetchone() if prediction else None
 
     financials = db.execute("""
         SELECT cash, quarterly_burn, source_date, source_url
@@ -106,12 +105,10 @@ def list_predictions():
     rows = db.execute("""
         SELECT
             p.id, c.ticker, c.name AS company_name,
-            p.category, p.direction, p.catalyst, p.window_start, p.window_end,
-            p.pass_condition, p.reasoning, p.run, p.published_at, p.outcome,
-            a.analyst_name, a.direction AS analyst_direction, a.outcome AS analyst_outcome
+            p.arm, p.category, p.direction, p.catalyst, p.window_start, p.window_end,
+            p.pass_condition, p.reasoning, p.run, p.published_at, p.outcome
         FROM prediction p
         JOIN company c ON c.id = p.company_id
-        LEFT JOIN analyst_call a ON a.prediction_id = p.id
         WHERE p.published_at IS NOT NULL
         ORDER BY p.window_end
     """).fetchall()

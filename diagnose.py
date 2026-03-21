@@ -46,16 +46,16 @@ def add_event(pipe_id, source_date, status, evidence, source_url):
 def add_prediction(
     company_id, pipe_id, pred_type, category, direction,
     catalyst, resolution_source, window_start, window_end,
-    pass_condition, reasoning, run,
+    pass_condition, reasoning, run, arm="temporal",
 ):
     """Record and publish a prediction. Sets published_at to now. Returns prediction id."""
     db = _db()
     cur = db.execute(
-        "INSERT INTO prediction (company_id, pipe_id, type, category, direction, "
+        "INSERT INTO prediction (company_id, pipe_id, arm, type, category, direction, "
         "catalyst, resolution_source, window_start, window_end, pass_condition, "
         "reasoning, run, published_at) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))",
-        (company_id, pipe_id, pred_type, category, direction,
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))",
+        (company_id, pipe_id, arm, pred_type, category, direction,
          catalyst, resolution_source, window_start, window_end,
          pass_condition, reasoning, run),
     )
@@ -65,17 +65,16 @@ def add_prediction(
     return pid
 
 
-def add_analyst_call(prediction_id, analyst_name, direction, source_url=None, call_date=None):
-    """Record an analyst's position. One per prediction (UNIQUE constraint)."""
-    db = _db()
-    cur = db.execute(
-        "INSERT INTO analyst_call (prediction_id, analyst_name, direction, source_url, call_date) VALUES (?, ?, ?, ?, ?)",
-        (prediction_id, analyst_name, direction, source_url, call_date),
+def add_analyst_prediction(
+    company_id, direction, catalyst, resolution_source,
+    window_start, window_end, pass_condition, run,
+):
+    """Record the analyst arm prediction. Returns prediction id."""
+    return add_prediction(
+        company_id, None, None, None, direction,
+        catalyst, resolution_source, window_start, window_end,
+        pass_condition, "Analyst call", run, arm="analyst",
     )
-    db.commit()
-    cid = cur.lastrowid
-    db.close()
-    return cid
 
 
 def score_prediction(prediction_id, outcome, notes=None):
