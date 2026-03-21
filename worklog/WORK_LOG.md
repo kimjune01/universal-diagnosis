@@ -79,3 +79,14 @@ Major changes in final stretch:
 - Phase 1 discovery: pull Shkreli's historical biotech positions 2022-2025
 - Process Phase 1 companies through three-arm pipeline
 - Dashboard v2 frontend polish
+
+### 00:15 — Prereg approved by codex, ready to execute Phase 1
+
+Final three schema blockers fixed: run enum (phase1/phase2/pilot_run0/pilot_run1), UNIQUE(company_id, arm, catalyst) constraint, graph features + confidence fields on prediction row. Codex confirmed no remaining blockers.
+
+Key discussion points before shipping:
+- Bare LLM arm considered and rejected as redundant — snapshot-only already isolates the temporal ordering question. Adding a third comparison dilutes McNemar's power at N=25.
+- Expected surprises: snapshot might tie temporal (Peters is decorative), living_dying might be hardest bucket (cash moderates), Shkreli might just be good (strong comparator), analyst-to-catalyst mapping might be lossy.
+- Theory-is-load-bearing already showed framework improves diagnostic quality. This pilot tests whether that translates to predictive accuracy on real binary outcomes. Cross-domain generalization is a separate experiment.
+
+**Status: prereg locked, schema aligned, ready for Phase 1 discovery.**
