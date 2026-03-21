@@ -236,6 +236,13 @@ Every prediction must have a complete chain:
 
 **Vol hypothesis**: descriptive at any N. Inferential only if both groups reach N >= 10.
 
+**Exploratory (post-hoc, not pre-registered as primary)**:
+- Among companies classified living_dying, do those with runway > 8 quarters hit more often than those with runway < 4 quarters? The hypothesis: given enough cash, a learning company will eventually outperform — the cash buys time for the consolidate stack to repair.
+- Which bucket has the highest hit rate? The framework predicts dying_pivoted → PASS and dying_dying → FAIL, but the relative accuracy of living_well and living_dying is unknown.
+- Do graph-derived features (recurrence count, repair latency, pipe coverage) predict accuracy within buckets?
+
+These analyses require N=30+ with sufficient representation in each bucket. Deferred until Phase 1 data is complete.
+
 ## Commitment
 
 - Process every qualifying Shkreli position (no cherry-picking)
