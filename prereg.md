@@ -51,8 +51,10 @@ What is out of scope:
 - Generalizing beyond biotech
 - Generalizing beyond Shkreli's picks
 
-### Smoke test correction
-A smoke test was run on CAPR using a static-tree framing (pre-temporal-network insight). The agents produced useful evidence but the prompts, report structure, and merge all used a snapshot model, not the temporal graph. Results are stashed in `smoke-test/CAPR/` for reference. The smoke test validated the mechanical pipeline (4-agent search, top-2 selection, codex merge, merge agreement) but the framing was wrong. CAPR will be re-run with temporal graph prompts before Run 0 is considered complete.
+### Smoke test as snapshot-only baseline
+The CAPR smoke test (static-tree framing, stashed in `smoke-test/CAPR/`) serves as the snapshot-only baseline for the pilot. Same company, same evidence sources, same agent protocol — only difference is the prompt framing (static snapshots vs. dated events). Both produced the same category (dying_pivoted) and direction (PASS), but the temporal framing surfaced a trauma recurrence disagreement the static framing missed.
+
+For the ongoing scorecard (prereg-backtest.md), every company gets three locked predictions: temporal-graph, snapshot-only, and analyst. The snapshot-only arm isolates whether temporal ordering adds signal.
 
 ### Freeze point
 All prompts, heuristics, inclusion criteria, merge rules, and scoring rules are frozen after Run 0 completes and before any Run 1 diagnosis begins. The freeze is marked by a single commit with the message "Freeze: Run 0 complete, Run 1 locked." No changes to the protocol after that commit.

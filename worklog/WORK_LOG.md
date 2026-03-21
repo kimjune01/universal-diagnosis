@@ -38,3 +38,16 @@ Key design decisions:
 - Cost: ~$1/company in API calls, $5-15/year total.
 
 Also discussed: if analysis becomes cheap, markets force companies into honesty. Spin is an adaptation to information-expensive environments. In information-cheap environments, it's maladaptive. The market is the selection pressure. Honest consolidate stacks survive. This is a blog post seed for later — the Landauer connection (erasing failure signals costs more than reconstructing them).
+
+### 23:15 — Codex data collection review, snapshot-only baseline added
+
+Codex reviewed the prereg against the hypothesis "seven-pipe temporal graph beats snapshot expert." Key finding: **we had no snapshot-only baseline.** Without it, we can't claim the temporal ordering adds value — we'd only be showing "our process produces scorable calls."
+
+Changes to prereg-backtest.md:
+- **Three arms per company**: temporal-graph prediction, snapshot-only prediction (same pipes, no ordering), analyst prediction
+- **Three hypotheses**: H1 temporal > snapshot (McNemar's), H2 temporal > analyst (McNemar's), H3 vol mispricing
+- **Graph-derived features**: recurrence count, transition count, repair latency, pipe coverage, event density, failure-to-repair path. Computed from events we already collect.
+- **Confidence levels**: high/medium/low for framework (based on merge agreement), inferred for analyst (from language strength)
+- The CAPR smoke test (static framing) is retroactively our first snapshot-only baseline — the controlled comparison we did by accident.
+
+Dashboard MVP also built this session: FastAPI + React, burger menu, health LED, event timeline with time travel, pipe status panel, prediction card, runway bar. Needs events loaded into DB to populate.
