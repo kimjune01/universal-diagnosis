@@ -101,20 +101,25 @@ Everything derives from these three values:
 - **Bucket**: `companyData.prediction.category` (not derived from pipe states in MVP)
 - **Runway**: `companyData.financials.runway_quarters` (static in MVP, not time-traveled)
 
-### Company nav (left sidebar, narrow)
+### Company nav (burger menu → slide-out panel)
 
-Vertical list of tickers, always visible. Each entry shows ticker + colored outcome chip (green hit, red miss, yellow pending). Selected company is highlighted. Click to load that company's data. Stays fixed while the main content scrolls.
+Hamburger icon top-left. Click to slide out a narrow panel with vertical ticker list. Each entry shows ticker + colored outcome chip. Selected company highlighted. Click a ticker to load its data and close the panel. Run 0 and Run 1 separated by a divider.
 
 ```
-  CAPR  ✓
-  QURE  ✓
- ─────────
-  SPRB  ◌
-  ATYR  ◌
-  INMB  ◌
+  ☰
+  ┌──────────┐
+  │ CAPR  ✓  │
+  │ QURE  ✓  │
+  │ ──────── │
+  │ SPRB  ◌  │
+  │ ATYR  ◌  │
+  │ INMB  ◌  │
+  │          │
+  │ Scorecard│
+  └──────────┘
 ```
 
-Run 0 and Run 1 separated by a divider.
+Panel also has a "Scorecard" link at the bottom to switch to the scorecard view. Clicking outside the panel or pressing Esc closes it.
 
 ### Event timeline (main panel)
 
