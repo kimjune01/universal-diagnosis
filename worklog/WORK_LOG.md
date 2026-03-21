@@ -51,3 +51,31 @@ Changes to prereg-backtest.md:
 - The CAPR smoke test (static framing) is retroactively our first snapshot-only baseline — the controlled comparison we did by accident.
 
 Dashboard MVP also built this session: FastAPI + React, burger menu, health LED, event timeline with time travel, pipe status panel, prediction card, runway bar. Needs events loaded into DB to populate.
+
+### 23:45 — Prereg finalized: three-arm backtest, schema aligned, codex approved
+
+Major changes in final stretch:
+
+**Schema overhaul**: dropped `analyst_call` table entirely. Analyst prediction is now a third arm in the `prediction` table (arm='temporal'|'snapshot'|'analyst'). All three arms scored against same ground truth, same catalyst, same window.
+
+**Phase 1 backtest added**: pull every qualifying Shkreli biotech position from May 2022-Dec 2025. Build temporal graphs from records dated before each catalyst. Score against known outcomes. Gives N=20-30 immediately.
+
+**Codex blockers resolved** (two rounds):
+- Position definition: 4 mechanical rules, deduplication (first directional per ticker), canonical source priority
+- Snapshot classification: exhaustive 2×2 table (cache status × consolidate status → category → direction). No "etc."
+- Analyst-to-catalyst mapping: 4 rules for generic bull/bear → specific catalyst
+- Eviction: dropped stale rule, catalyst window runs to completion
+- Schema/prereg alignment: both preregs now reference same three-arm model
+
+**Exploratory hypotheses logged** (deferred until N=30+):
+- Runway × bucket interaction: among living_dying companies, do those with > 8q runway outperform those with < 4q?
+- Per-bucket hit rates: which category predicts best?
+- Graph feature analysis: do recurrence count, repair latency, pipe coverage predict accuracy within buckets?
+
+**User's personal hypothesis**: "given enough runway, a learning company will outperform." Testable as living_dying × high runway vs. living_dying × low runway.
+
+**What's next**:
+- Load events from search reports into DB (parser needed)
+- Phase 1 discovery: pull Shkreli's historical biotech positions 2022-2025
+- Process Phase 1 companies through three-arm pipeline
+- Dashboard v2 frontend polish
