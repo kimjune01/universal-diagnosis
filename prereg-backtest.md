@@ -1,43 +1,44 @@
-# Pre-registration: Backtest
+# Pre-registration: Ongoing Scorecard
 
-**Status**: Not started. Logged as future work.
+**Status**: Active. N grows as Shkreli takes public positions.
 
 ## Research question
 
-Does the Natural Framework's consolidate stack diagnosis predict Phase 3 binary outcomes better than the naive base rate, and do companies with broken read_outcomes pipes exhibit higher realized-to-implied volatility ratios around catalyst dates?
+Does the Natural Framework's consolidate stack diagnosis predict biotech catalyst outcomes better than Martin Shkreli's public calls on the same companies?
 
 ## Design
 
-Retrospective backtest across public biotech Phase 3 readouts from 2020-2025.
+Follow Shkreli's public biotech positions as they appear. Each one gets the full treatment: 4 search agents, temporal graph, category classification, PASS/FAIL prediction, scored against ground truth. N grows organically.
 
 ### Hypothesis 1: Directional prediction
 
-The framework's trajectory category (living_well, living_dying, dying_pivoted, dying_dying) predicts Phase 3 outcome (primary endpoint met or not) better than the historical base rate (~50% for Phase 3, per BIO/Informa).
-
-- living_well → PASS
-- dying_pivoted → PASS
-- living_dying → FAIL
-- dying_dying → FAIL
+The framework's trajectory category predicts catalyst outcome better than Shkreli's call on the same catalyst.
 
 ### Hypothesis 2: Vol mispricing
 
-Companies diagnosed with broken read_outcomes (management overframing pattern) have higher realized-to-implied vol ratios around catalyst dates than companies with functional read_outcomes.
+Companies diagnosed with broken read_outcomes exhibit higher realized-to-implied vol ratios around catalyst dates than companies with functional read_outcomes.
 
 ## Sample
 
+### Selection rule
+Every biotech company where Shkreli takes a public, timestamped, directional position (long/short/bull/bear) gets diagnosed. No cherry-picking. If he tweets it, we run it.
+
 ### Inclusion criteria
-- Public U.S. biotech company (SEC filings available)
-- Phase 3 topline readout between January 1, 2020 and December 31, 2025
-- Primary endpoint result publicly disclosed via press release or 8-K
-- At least two prior trials or FDA interactions on the same program (enough history for temporal graph)
-- Listed options available at time of readout (Hypothesis 2 only)
+- Shkreli has a public, timestamped, directional position (X post, interview, report)
+- Company has a binary catalyst within 12 months (trial readout, FDA action, regulatory filing)
+- At least 3 dated public records exist before the catalyst (enough for a temporal graph)
+- Listed options available at time of catalyst (Hypothesis 2 only)
 
 ### Exclusion criteria
-- Companies with fewer than 3 dated public records before the readout (insufficient temporal graph)
-- Readouts where the primary endpoint result is ambiguous (e.g., mixed results with no clear met/not-met determination)
+- Non-biotech positions (computing, crypto, etc.)
+- Positions without a clear directional call (vague commentary, "interesting company")
+- Companies with fewer than 3 dated public records
+
+### Stopping rule
+If Shkreli stops covering a stock (goes silent, position closed, company acquired or delisted), the prediction resolves on whatever ground truth exists at that point or is voided if no catalyst occurred within the window. We don't keep diagnosing companies he's moved on from.
 
 ### Expected sample size
-BIO/Informa reports ~1,500 Phase 3 trials initiated annually across all sponsors. Filtering to public U.S. companies with sufficient history and options data: estimated 200-400 scorable events over 2020-2025.
+Shkreli takes 5-10 public biotech positions per year. At that rate, N=10 within 1-2 years. N=30 within 3-5 years.
 
 ## Data sources
 
@@ -48,70 +49,78 @@ All public, all free or cheap:
 - **FDA databases**: approval letters, CRLs, meeting minutes with issuance dates
 - **CRSP / Yahoo Finance**: daily stock prices around catalyst dates
 - **CBOE / OptionMetrics**: 30-day implied volatility before catalyst (Hypothesis 2; may require paid data)
+- **Shkreli's public posts**: X (Twitter), YouTube, Substack, interviews — with timestamps and URLs
 
 ## Method
 
-### For each company-readout pair:
+### For each new Shkreli position:
 
-1. **Build temporal graph** from public records dated before the readout. Each record is an event with: pipe, source_date, status, evidence, source_url. Same schema as the pilot.
+1. **Record the analyst call**: Shkreli's post URL, date, direction (bull/bear), and the specific catalyst he's calling. This is the audit trail entry point.
 
-2. **Classify trajectory** using the same agent protocol as the pilot: 4 search agents, top-2 selection, 2 merge instances, soap-a default on disagreement. Category assigned: living_well, living_dying, dying_pivoted, dying_dying.
+2. **Define the catalyst**: exact event, resolution source, window, pass condition. Same template as the pilot. Lock before any diagnosis.
 
-3. **Map category to direction**: living_well/dying_pivoted → PASS, living_dying/dying_dying → FAIL.
+3. **Build temporal graph** from public records dated before the catalyst. Each record is an event with: pipe, source_date, status, evidence, source_url. Same schema as the pilot.
 
-4. **Score against ground truth**: Did the Phase 3 primary endpoint meet statistical significance? Source: company press release or 8-K announcing topline. Binary: met or not met.
+4. **Classify trajectory** using the same agent protocol: 4 search agents, top-2 selection, 2 merge instances, soap-a default on disagreement. Category assigned: living_well, living_dying, dying_pivoted, dying_dying.
 
-5. **For Hypothesis 2**: Pull 30-day implied vol before readout date, compute 5-day realized vol around readout date. Compute ratio. Tag company with read_outcomes status from the temporal graph.
+5. **Map category to direction**: living_well/dying_pivoted → PASS, living_dying/dying_dying → FAIL.
 
-### Automation
+6. **Publish prediction** before catalyst date. Commit to repo with timestamp.
 
-The pilot ran 4 agents per company manually. At 200-400 companies, this needs automation:
-- Batch agent dispatch with structured prompts
-- Automated event extraction from SEC EDGAR API and ClinicalTrials.gov API
-- Automated category classification (may require a lighter model or rule-based classifier trained on pilot data)
-- Cost estimate needed before starting
+7. **Score against ground truth**: check resolution source on window_end. Binary: pass condition met or not.
+
+8. **For Hypothesis 2**: Pull 30-day implied vol before catalyst date, compute 5-day realized vol around catalyst. Compute ratio. Tag company with read_outcomes status.
+
+## Audit trail
+
+Every prediction must have a complete chain of provenance:
+
+1. **Shkreli source**: URL + screenshot/archive of his public position with timestamp
+2. **Search reports**: 4 agent outputs saved to `searches/{TICKER}/`
+3. **SOAP notes**: 2 merge outputs saved to `notes/{TICKER}/`
+4. **Diagnosis**: final prediction record saved to `diagnoses/{TICKER}.md`
+5. **DB record**: all fields populated in `prediction` table with `published_at` set
+6. **Ground truth**: URL to the press release or 8-K that resolves the catalyst
+
+Every event in the temporal graph has a `source_url` pointing to the public record. If the URL dies, the archival date and evidence text remain. The chain runs: Shkreli post → agent search → events with URLs → SOAP merge → prediction → ground truth.
 
 ## Scoring
 
-### Hypothesis 1
-- **Primary metric**: accuracy (% correct PASS/FAIL predictions)
-- **Benchmark**: BIO/Informa historical Phase 3 success rate for the same therapeutic areas
-- **Statistical test**: binomial test against base rate. At N=300 and 55% accuracy vs. 50% base rate, power is ~80%.
-- **Significance threshold**: p < 0.05
+### Hypothesis 1: Head-to-head
+- **Primary metric**: framework accuracy vs. Shkreli accuracy on the same catalysts
+- **Secondary**: framework accuracy vs. naive base rate (50% for Phase 3)
+- **Statistical test**: binomial test. At N=10, 9/10 correct is p=0.01 vs 50% base rate. At N=10, even 8/10 is p=0.055.
+- **Realistic expectation**: N will grow slowly. Statistical significance may take years. The dashboard shows convergence in real time.
 
-### Hypothesis 2
+### Hypothesis 2: Vol mispricing
 - **Primary metric**: mean realized/implied vol ratio, segmented by read_outcomes status
-- **Statistical test**: two-sample t-test or Mann-Whitney U (depending on distribution)
-- **Significance threshold**: p < 0.05
-- **Minimum group size**: 30 companies per group (broken vs. functional read_outcomes)
+- **Minimum group size**: 5 per group before computing (small N acknowledged)
+- **This hypothesis is secondary** — it runs in parallel but may never reach statistical power with Shkreli-only sample
 
 ## Known biases
 
-1. **Survivorship bias**: only companies with listed options and sufficient public records are included. Smaller, less-covered companies are excluded.
-2. **Look-ahead bias**: temporal graph must be built strictly from records dated before the readout. Any record with a source_date after the readout is excluded. This is enforceable because every event has an archival date.
-3. **Classification bias**: the same framework that generated the pilot predictions classifies the backtest. No independent validation of the category assignments. Mitigated by mechanical scoring of outcomes.
-4. **Agent drift**: LLM behavior may differ between pilot (2026) and backtest (analyzing 2020-2025 events). Model version should be locked.
-5. **Endpoint ambiguity**: some Phase 3 readouts have ambiguous results (met secondary but not primary, met in subgroup, etc.). Strict rule: score against pre-specified primary endpoint only. If the company changed the primary endpoint mid-trial, use the last registered primary before readout.
+1. **Selection bias**: we only diagnose companies Shkreli covers. His picks skew toward controversial, high-volatility names. Not a random sample of biotech.
+2. **Look-ahead bias**: temporal graph must be built strictly from records dated before the catalyst. Enforceable because every event has a source_date.
+3. **Classification bias**: the framework author (us) also runs the diagnosis. Mitigated by mechanical scoring and audit trail.
+4. **Small N**: significance accumulates slowly. The dashboard shows convergence but may never reach p < 0.05. That's a result, not a failure.
 
 ## Success criterion
 
-**Hypothesis 1**: Framework accuracy > base rate at p < 0.05. If the framework classifies at 55%+ on 300+ events, the consolidate stack diagnosis adds predictive power.
+**Descriptive**: framework accuracy and Shkreli accuracy reported side by side after each resolution. No inferential claim until N >= 20.
 
-**Hypothesis 2**: Broken read_outcomes group has significantly higher realized/implied vol ratio than functional group at p < 0.05. Effect size > 0.2 (small-to-medium).
+**Inferential** (if N reaches 20+): framework accuracy > Shkreli accuracy or > base rate at p < 0.05.
 
-Either hypothesis can succeed or fail independently.
+**Vol hypothesis**: reported descriptively at any N. Inferential only if both groups reach N >= 10.
 
 ## Commitment
 
-- Pre-register before running any backtest
-- Lock model versions, prompts, and classification rules before processing any company
-- Publish all results regardless of outcome
-- Report accuracy, base rate, p-values, and effect sizes
-- Release the full dataset (temporal graphs, classifications, outcomes) for replication
+- Diagnose every Shkreli biotech position we become aware of (no cherry-picking)
+- Publish prediction before catalyst date
+- Publish outcome regardless of result
+- Maintain complete audit trail (Shkreli source URL → search reports → SOAP notes → diagnosis → ground truth URL)
+- Update dashboard and scorecard.json after each resolution
+- Report misses at same prominence as hits
 
 ## Cost estimate
 
-TBD. Main costs:
-- LLM API calls for agent dispatch (~4 agents × 2 merges × 300 companies = ~1,800 calls)
-- OptionMetrics or equivalent for historical IV data (may be $500-2,000)
-- Compute time for batch processing
+Per company: ~$0.50-1.50 in LLM API calls (4 agents + 2 merges). At 5-10 companies/year: **$5-15/year**. The dashboard is free (static HTML + JSON).
