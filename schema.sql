@@ -88,14 +88,23 @@ CREATE TABLE IF NOT EXISTS prediction (
     window_end TEXT NOT NULL,           -- scoring window closes
     pass_condition TEXT NOT NULL,       -- exact condition for PASS
     reasoning TEXT NOT NULL,            -- one sentence — temporal trajectory, not snapshot
-    run TEXT NOT NULL                   -- 'run0' or 'run1'
-        CHECK(run IN ('run0', 'run1')),
+    run TEXT NOT NULL
+        CHECK(run IN ('phase1', 'phase2', 'pilot_run0', 'pilot_run1')),
     published_at TEXT,                  -- when we published (timestamp = priority)
     outcome TEXT CHECK(outcome IN ('hit', 'miss', 'void', 'pending'))
         DEFAULT 'pending',
     outcome_notes TEXT,
     outcome_date TEXT,
-    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    -- Graph-derived features (computed at prediction time)
+    confidence TEXT CHECK(confidence IN ('high', 'medium', 'low')),
+    recurrence_count INTEGER,
+    transition_count INTEGER,
+    repair_latency_days INTEGER,
+    pipe_coverage REAL,
+    has_repair_path INTEGER,
+    event_density REAL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(company_id, arm, catalyst)   -- one prediction per arm per catalyst
 );
 
 -- Financial snapshots for runway calculation
