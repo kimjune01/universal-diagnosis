@@ -61,13 +61,36 @@ One position per ticker per directional stance. If Shkreli is bull on SPRB in Oc
 
 ### Phase 1 discovery
 
-Search Shkreli's public record (X/Twitter archive, YouTube, interviews, financial media coverage) from May 2022 through December 2025. The full list of qualifying positions is frozen before any diagnosis begins. Process all of them — no subset selection.
+Discovery conducted via web-searchable media coverage (financial news, Seeking Alpha, StockTwits, Benzinga, X post embeds in articles) from May 2022 through December 2025. Discovery is limited to positions that generated indexed media coverage — X-only or YouTube-only positions without media pickup may be missed. The full list is frozen before any diagnosis begins. Process all of them — no subset selection.
 
 **Canonical source priority** (for the same position):
 1. X/Twitter post with timestamp (preferred — most precise dating)
 2. YouTube video with timestamp (second — verifiable but harder to quote)
 3. Interview or article quoting Shkreli with publication date (third)
 4. Financial media reporting his position (last resort)
+
+### Frozen Phase 1 list
+
+Discovered and frozen March 20, 2026.
+
+| # | Ticker | Direction | Position date | Catalyst | Resolved? |
+|---|--------|-----------|---------------|----------|-----------|
+| 1 | SAVA | Short | Nov 2024 | Phase 3 simufilam readout | Yes (failed, stock -86%) |
+| 2 | CAPR | Short | Nov 2025 | HOPE-3 Phase 3 topline | Yes (positive, stock +440%) |
+| 3 | QURE | Long | ~2025 | AMT-130 topline | Yes (positive, then FDA reversed) |
+| 4 | SPRB | Long | Oct 2025 | BLA submission by Q4 2026 | Pending |
+| 5 | ATYR | Short | Jul 2025 | New sarcoidosis trial by Sep 2026 | Pending |
+| 6 | INMB | Short | Jun 2025 | CORDStrom MAA by Sep 2026 | Pending |
+
+**Excluded:**
+- GALT (short Dec 2024) — no clean binary catalyst, ongoing FDA dialogue
+- BMRN (long ~mid 2023) — no binary catalyst within 12 months
+- AVXL (short Dec 2024) — "don't know when" fails position rule #2
+- SLS (bear Mar 2025) — moves to Phase 2 when REGAL catalyst resolves
+
+**Phase 1 N = 6** (3 resolved for immediate scoring, 3 pending from pilot)
+
+**Discovery limitation**: web search only. Positions made exclusively on X or YouTube without media pickup may be missing. Acknowledged as a coverage gap.
 
 ### Inclusion criteria
 - Qualifies as a position (per rules above)
