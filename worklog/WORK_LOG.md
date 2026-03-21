@@ -90,3 +90,7 @@ Key discussion points before shipping:
 - Theory-is-load-bearing already showed framework improves diagnostic quality. This pilot tests whether that translates to predictive accuracy on real binary outcomes. Cross-domain generalization is a separate experiment.
 
 **Status: prereg locked, schema aligned, ready for Phase 1 discovery.**
+
+### 00:30 — Phase 1 discovery started
+
+Phase 1 discovery started. Initial search found ~8-10 qualifying Shkreli post-prison biotech positions (May 2022-Dec 2025). Five already in pilot (CAPR, QURE, SPRB, ATYR, INMB). New candidates: SAVA (short Nov 2024, Phase 3 failed, stock -86% — clear add), GALT (short Dec 2024, needs research), AVXL (excluded — "don't know when" fails position definition rule #2). Pool is smaller than the 20-30 estimated in prereg. Per prereg rules: discovery must be exhaustive before freezing the list. Need deeper search of X archive, YouTube, interviews next session. No processing until list is frozen.
