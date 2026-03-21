@@ -63,8 +63,16 @@ Search Shkreli's public record (X/Twitter, YouTube, interviews, financial media 
 - Companies with fewer than 3 dated public records
 - Catalysts that are ambiguous or unresolvable (no clear binary outcome)
 
-### Stopping rule (Phase 2 only)
-If Shkreli stops covering a stock, the prediction resolves on whatever ground truth exists or is voided if no catalyst occurred within the window.
+### Eviction policy (Phase 2 only)
+
+Companies are evicted from active tracking under four conditions:
+
+- **Resolved**: catalyst occurred, outcome scored (hit/miss). Company moves to historical record.
+- **Voided**: catalyst window expired with no binary event. Scored as void, evicted from active tracking.
+- **Stale**: no public Shkreli statement about the company in 6 months. Evicted. Any pending prediction resolves on whatever ground truth exists at eviction date, or is voided if no catalyst occurred.
+- **Dead**: company acquired, delisted, or entered bankruptcy. Pending prediction voided, evicted.
+
+The 6-month staleness rule prevents tracking zombie positions where Shkreli quietly exited. If he's still talking about it, we keep tracking. If he's moved on, so do we.
 
 ### Expected sample size
 - **Phase 1**: Shkreli has been publicly active on biotech since mid-2022. Estimated 20-30 resolvable positions. All outcomes known.
