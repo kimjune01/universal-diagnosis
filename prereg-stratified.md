@@ -8,8 +8,8 @@ Does the Natural Framework's consolidate stack diagnosis predict biotech catalys
 
 ## Key distinction from other preregs
 
-- **Shkreli prereg**: follows one analyst's picks (biased sample, small N)
-- **This prereg**: stratified random sample from the population, balanced success/failure, ranked by hype
+- **Shkreli prereg** (prereg-backtest.md): follows one analyst's picks. Uses press releases/8-Ks as resolution sources. Catalyst types include trial readouts, BLA submissions, and trial announcements. Different experiment, different sample, different rules.
+- **This prereg**: independent experiment. Stratified random sample from ClinicalTrials.gov results postings only. Phase 3 trial readouts only. No overlap with the Shkreli sample unless a company happens to appear in both (scored independently under each experiment's rules).
 
 ## Design
 
