@@ -25,3 +25,16 @@ If diagnosis becomes cheap enough, the information asymmetry inverts. Management
 - Wait for catalysts: ATYR/INMB by Sep 30, SPRB by Dec 31
 - Leading indicators: ATYR FDA Type C meeting mid-April, INMB MHRA pre-MAA feedback May
 - Future work: vol backtest (IV vs realized around catalyst dates), insider transaction signals (Form 4 events in temporal graph)
+
+### 22:45 — Backtest prereg simplified, dashboard built, audit trail formalized
+
+Simplified the backtest from "scrape 300 Phase 3 readouts" to "follow Shkreli's public positions as they come." If he tweets it, we run it. If he stops covering it, we stop too. N grows organically — 5-10/year, significance may take years, dashboard shows convergence in real time.
+
+Key design decisions:
+- Selection rule is Shkreli's posts, not our choice. Eliminates cherry-picking.
+- Full audit trail required: Shkreli source URL → 4 search reports → 2 SOAP notes → diagnosis → ground truth URL. Every event in the temporal graph has a source_url.
+- Dashboard (dashboard.html) polls scorecard.json every 30s. Shows running accuracy, p-value vs 50% base rate, convergence bar at N>=10.
+- export_scorecard.py regenerates JSON from DB after each resolution.
+- Cost: ~$1/company in API calls, $5-15/year total.
+
+Also discussed: if analysis becomes cheap, markets force companies into honesty. Spin is an adaptation to information-expensive environments. In information-cheap environments, it's maladaptive. The market is the selection pressure. Honest consolidate stacks survive. This is a blog post seed for later — the Landauer connection (erasing failure signals costs more than reconstructing them).
