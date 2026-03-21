@@ -29,7 +29,7 @@ results_first_posted <= 2025-12-31
 
 Filter to:
 - **Biotech definition**: sponsor is a publicly traded U.S. company (has SEC CIK number) with market cap < $20B at time of readout. This excludes big pharma (Pfizer, Merck, etc.) where the consolidate stack dynamics are different.
-- **Binary outcome**: primary endpoint has a clear met/not-met determination in the results posting or contemporaneous press release. Exclude trials where the primary endpoint result is ambiguous, mixed, or unreported.
+- **Binary outcome**: primary endpoint has a clear met/not-met determination in the results posting. Exclude trials where the primary endpoint result is ambiguous, mixed, or unreported in the ClinicalTrials.gov results.
 - **One entry per company-catalyst**: if a company has multiple Phase 3 readouts, each is a separate entry. Deduplicate by NCT number.
 
 #### Step 2: Label outcomes
@@ -38,7 +38,7 @@ For each trial in the population:
 - **Success**: primary endpoint met statistical significance as pre-specified
 - **Failure**: primary endpoint did not meet statistical significance
 
-Source of truth: ClinicalTrials.gov results posting (primary outcome measure, p-value or CI). If results are not posted, use the company's press release or 8-K announcing topline (must be dated within 7 days of trial completion).
+Source of truth: ClinicalTrials.gov results posting only (primary outcome measure, p-value or CI). No fallback to press releases — if results aren't posted on ClinicalTrials.gov, the trial is excluded from the population.
 
 #### Step 3: Compute hype score
 
@@ -82,6 +82,15 @@ Framework accuracy > 50% on the balanced sample.
 - **Statistical test**: binomial test (one-sided, H_a: p > 0.5)
 - **Significance**: p < 0.05
 - At N=100, need 59+ correct for significance
+
+### H1b: Temporal arm beats snapshot arm (contamination-sensitive)
+
+Temporal prediction accuracy > snapshot prediction accuracy on the same companies.
+
+- **Rationale**: if LLM contamination inflates both arms equally, the temporal-vs-snapshot delta isolates whether temporal ordering adds real signal. This is the contamination-robust test.
+- **Statistical test**: McNemar's test (paired binary outcomes)
+- **Significance**: p < 0.05
+- If H1 passes but H1b fails: contamination likely drove the result, not the temporal graph
 
 ### H2: Framework adds more signal for high-hype stocks
 
@@ -186,6 +195,8 @@ N=100 in batch. Per company: ~$0.50-1.50 in API calls. Total: ~$50-150. Dashboar
 ## Success criteria
 
 **H1**: framework accuracy > 50% at p < 0.05 (binomial, N=100).
+
+**H1b**: temporal accuracy > snapshot accuracy at p < 0.05 (McNemar's, N=100). This is the contamination-robust test. If H1 passes but H1b fails, contamination likely inflated both arms.
 
 **H2**: hype × prediction interaction significant at p < 0.05 (logistic regression).
 
