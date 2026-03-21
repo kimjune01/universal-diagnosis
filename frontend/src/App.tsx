@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchCompanies, fetchCompany } from "./api";
-import { CompanySummary, CompanyDetail } from "./types";
+import type { CompanySummary, CompanyDetail } from "./types";
 import { BurgerMenu } from "./components/BurgerMenu";
 import { HealthLED } from "./components/HealthLED";
 import { EventTimeline } from "./components/EventTimeline";

@@ -1,4 +1,5 @@
-import { CompanySummary, OUTCOME_ICONS } from "../types";
+import type { CompanySummary } from "../types";
+import { OUTCOME_ICONS } from "../types";
 
 interface Props {
   companies: CompanySummary[];

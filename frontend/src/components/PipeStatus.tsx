@@ -1,4 +1,5 @@
-import { Pipe, Event, STATUS_COLORS, STATUS_ICONS } from "../types";
+import type { Pipe, Event } from "../types";
+import { STATUS_COLORS, STATUS_ICONS } from "../types";
 
 interface Props {
   pipes: Pipe[];

@@ -1,4 +1,4 @@
-import { Prediction, Analyst, STATUS_COLORS } from "../types";
+import type { Prediction, Analyst } from "../types";
 
 interface Props {
   prediction: Prediction | null;

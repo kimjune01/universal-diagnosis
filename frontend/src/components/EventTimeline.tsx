@@ -1,4 +1,5 @@
-import { Event, STATUS_COLORS, STATUS_ICONS } from "../types";
+import type { Event } from "../types";
+import { STATUS_COLORS, STATUS_ICONS } from "../types";
 
 interface Props {
   events: Event[];

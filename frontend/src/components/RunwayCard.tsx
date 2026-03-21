@@ -1,4 +1,4 @@
-import { Financials } from "../types";
+import type { Financials } from "../types";
 
 interface Props {
   financials: Financials | null;
@@ -7,7 +7,7 @@ interface Props {
 export function RunwayCard({ financials }: Props) {
   if (!financials) return null;
 
-  const { cash, quarterly_burn, runway_quarters, runway_months, source_date } = financials;
+  const { cash, quarterly_burn, runway_quarters, source_date } = financials;
   const cashM = (cash / 1_000_000).toFixed(0);
   const burnM = (quarterly_burn / 1_000_000).toFixed(0);
 
