@@ -1,150 +1,204 @@
-# Dashboard v2: CRUD Diagnosis Viewer
+# Dashboard v2: Diagnosis Viewer
 
 ## Overview
 
-CRUD app for managing and viewing biotech diagnoses. FastAPI backend serving the existing SQLite database. React + Vite frontend. One company at a time. Discrete event stepping, not a continuous scrubber.
+Read-only event explorer for biotech diagnoses. FastAPI backend serving the existing SQLite database. React + Vite frontend. One company at a time. Time travel by clicking events.
+
+**Scale**: tens of companies, hundreds of events. Local tool, not deployed.
 
 ## Architecture
 
 ```
-FastAPI (Python) ─── SQLite (existing schema)
+FastAPI (Python) ─── SQLite (diagnosis.db)
      │
      └── REST API ─── React + Vite (TypeScript)
 ```
 
-No JSON export file. The frontend queries the API, which queries the DB directly. Same diagnosis.db the CLI tools already use.
+No JSON export. The frontend queries the API. Same DB the CLI tools use.
 
-## API endpoints
+## API
 
-### Companies
-- `GET /companies` — list all companies with latest bucket and prediction status
-- `GET /companies/{ticker}` — company detail: pipes, events, financials, prediction
+### `GET /companies`
 
-### Events
-- `GET /companies/{ticker}/events` — all events for a company, chronological
-- `GET /companies/{ticker}/events?before={date}` — events before a date (for time travel)
-- `POST /companies/{ticker}/events` — add an event (from agent output or manual entry)
+Returns all companies with their prediction summary. Denormalized — one query, no N+1.
 
-### Pipes
-- `GET /companies/{ticker}/pipes` — pipe topology (stable, doesn't change)
-- `GET /companies/{ticker}/pipes/status?at={date}` — latest status per pipe as of a date (most recent event per pipe before that date)
+```json
+[
+  {
+    "ticker": "CAPR",
+    "name": "Capricor Therapeutics",
+    "category": "dying_pivoted",
+    "direction": "pass",
+    "outcome": "hit",
+    "event_count": 38
+  }
+]
+```
 
-### Predictions
-- `GET /predictions` — all predictions with outcomes (the scorecard)
-- `POST /predictions` — record a new prediction
-- `PATCH /predictions/{id}` — score a prediction (set outcome)
+### `GET /companies/{ticker}`
 
-### Analyst calls
-- `POST /predictions/{id}/analyst` — record Shkreli's position
-- `GET /predictions/{id}/analyst` — get Shkreli's position
+One aggregate endpoint for the full company view. Returns everything the frontend needs in one call.
 
-### Stats
-- `GET /stats` — running accuracy, p-value, N, hits, misses, pending
+```json
+{
+  "ticker": "CAPR",
+  "name": "Capricor Therapeutics",
+  "pipes": [
+    { "id": 2, "description": "Compound enters biological system", "stack": "cache", "site": "perceive_cache", "depth": 1 }
+  ],
+  "events": [
+    { "id": 1, "pipe_id": 2, "pipe_site": "perceive_cache", "source_date": "2012-02-14", "status": "functional", "evidence": "CADUCEUS: intracoronary CDCs reach myocardium", "source_url": "https://pubmed.ncbi.nlm.nih.gov/22336189/" }
+  ],
+  "prediction": {
+    "id": 1,
+    "category": "dying_pivoted",
+    "direction": "pass",
+    "catalyst": "HOPE-3 Phase 3 topline",
+    "resolution_source": "Capricor press release or SEC 8-K",
+    "window_start": "2025-10-01",
+    "window_end": "2025-12-31",
+    "pass_condition": "PUL v2.0 total score statistically significant",
+    "reasoning": "Consolidate stack functional across four iterations",
+    "outcome": "hit"
+  },
+  "analyst": {
+    "analyst_name": "Martin Shkreli",
+    "direction": "fail",
+    "source_url": "https://x.com/MartinShkreli/status/...",
+    "call_date": "2025-11-24"
+  },
+  "financials": {
+    "cash": 318000000,
+    "quarterly_burn": 26000000,
+    "source_date": "2025-12-31",
+    "runway_quarters": 12
+  }
+}
+```
 
-## Frontend: single company view
+Events returned ascending by source_date. All dates are ISO 8601 date-only (YYYY-MM-DD).
 
-### Company selector (top bar)
-Dropdown or tab bar of tickers. Click one to load its view. Badge showing prediction direction and outcome status.
+### `GET /predictions`
 
-### Event timeline (main panel)
-Vertical list of events, chronological, newest at top. Each event shows:
-- Date (source_date)
-- Pipe name + stack indicator (cache/consolidate)
-- Status chip (colored: green/red/yellow/blue/gray)
-- Evidence text (truncated, click to expand)
-- Source URL (link icon)
+The scorecard. All published predictions with analyst calls and outcomes.
 
-Click an event to "time travel" — everything below updates to show state as of that event's date.
+### `GET /stats`
 
-### Pipe status panel (sidebar)
-Flat grouped list (not animated tree). Two groups: cache stack, consolidate stack. Each pipe shows its status as of the selected date.
+Running accuracy, p-value vs 50% base rate, N, hits, misses, pending.
+
+## Frontend
+
+### State model
 
 ```
-CACHE STACK (forward pass)
+selectedTicker: string
+selectedEventId: number | null     // null = latest (current state)
+companyData: CompanyResponse       // from GET /companies/{ticker}
+```
+
+Everything derives from these three values:
+- **Pipe statuses**: for each pipe, find the most recent event with `event.id <= selectedEventId`. That event's status is the pipe's status at the selected point in time.
+- **Bucket**: `companyData.prediction.category` (not derived from pipe states in MVP)
+- **Runway**: `companyData.financials.runway_quarters` (static in MVP, not time-traveled)
+
+### Company selector (top bar)
+
+Tab bar of tickers. Each tab shows ticker + colored outcome chip (green hit, red miss, yellow pending). Click to load that company's data.
+
+### Event timeline (main panel)
+
+Vertical list, ascending (oldest at top, newest at bottom — reading order matches temporal flow).
+
+Each event row:
+```
+2020-09-21  [c] filter_attend   ✗ broken
+ALLSTAR publication: primary endpoint failed (scar size wrong readout)
+                                                    pubmed.ncbi.nlm.nih.gov ↗
+```
+
+- Date, stack tag `[c]`/`[s]`, pipe site, status chip
+- Evidence text (one line, truncated, click to expand)
+- Source URL as a subtle link
+- Selected event has a highlighted border
+- Click any event → selectedEventId updates → pipe status panel recomputes
+
+### Pipe status panel (sidebar)
+
+Two groups. Each pipe shows status as of selectedEventId.
+
+```
+CACHE STACK
   perceive_cache      ✓ functional
   cache_filter        ~ stressed
   filter_attend       ↑ repaired
   attend_remember     ? unknown
 
-CONSOLIDATE STACK (backward pass)
+CONSOLIDATE STACK
   read_outcomes       ✗ broken
   batch_process       ✓ functional
   write_substrate     ✓ functional
 ```
 
-Status chips update when you click a different event (time travel).
+If no event exists for a pipe at the selected time, show `—` (no data yet).
 
-### Bucket + Runway card (sidebar, below pipes)
-One card showing:
-- Current bucket: living_well / living_dying / dying_pivoted / dying_dying
-- Cash: $XXM
-- Quarterly burn: $XXM/q
-- Runway: N quarters (progress bar, green > 8q, yellow 4-8q, red < 4q)
-- As-of date for the financial data
+Status colors: green=functional, red=broken, yellow=stressed, blue=repaired, gray=unknown.
 
-### Prediction card (sidebar, bottom)
-- Direction: PASS / FAIL
-- Catalyst description
-- Window: start → end (days remaining)
-- Shkreli: bull / bear (with source link)
-- Merges agree: yes / no
-- Outcome: pending / hit / miss
+### Prediction card (sidebar, below pipes)
 
-## Frontend: scorecard view
+```
+PREDICTION: PASS (dying_pivoted)
+Catalyst: HOPE-3 Phase 3 topline
+Window: 2025-10-01 → 2025-12-31
+Pass condition: PUL v2.0 significant
+Outcome: HIT ✓
 
-Separate route `/scorecard`. The existing dashboard.html table, but now powered by the API instead of polling a JSON file. Shows:
-- All predictions in a table
-- Running accuracy and p-value
-- Convergence bar (at N >= 10)
+ANALYST: Martin Shkreli — FAIL
+Source: x.com/MartinShkreli/... ↗
+Date: 2025-11-24
+```
 
-## Data additions needed
+### Runway card (sidebar, bottom)
 
-The existing schema has companies, pipes, events, predictions, analyst_calls. What's missing:
+```
+RUNWAY
+Cash: $318M  Burn: $26M/q  Runway: 12q
+████████████████████░░░░ as of 2025-12-31
+```
 
-### Financial snapshots
+Progress bar: green > 8q, yellow 4-8q, red < 4q.
+
+### Scorecard view (`/scorecard`)
+
+Table of all predictions. Running accuracy and p-value. Same data as v1 dashboard but from the API.
+
+## Data addition
+
+One new table for financials:
+
 ```sql
 CREATE TABLE IF NOT EXISTS financial_snapshot (
     id INTEGER PRIMARY KEY,
     company_id INTEGER NOT NULL REFERENCES company(id),
-    cash INTEGER NOT NULL,              -- in dollars
-    quarterly_burn INTEGER NOT NULL,    -- in dollars
-    source_date TEXT NOT NULL,          -- when this was reported
+    cash INTEGER NOT NULL,
+    quarterly_burn INTEGER NOT NULL,
+    source_date TEXT NOT NULL,
     source_url TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 ```
 
-Multiple snapshots per company — runway changes over time. The API computes current runway as `cash / quarterly_burn` from the most recent snapshot.
-
-### Bucket derivation
-Bucket is derived, not stored. The API computes it from the latest pipe statuses:
-- All pipes functional or repaired → `living_well`
-- Cache stack functional, consolidate has broken pipes → `living_dying`
-- Has broken → repaired transitions in recent events → `dying_pivoted`
-- Multiple broken pipes, no repairs → `dying_dying`
-
-Or: just use the prediction's `category` field, which was set during diagnosis.
+API returns latest snapshot per company. Runway = `cash / quarterly_burn` computed server-side.
 
 ## Tech stack
 
-- **Backend**: FastAPI, uvicorn, sqlite3 (stdlib, no ORM)
+- **Backend**: FastAPI, uvicorn, sqlite3 (no ORM)
 - **Frontend**: Vite + React + TypeScript, pnpm
-- **Styling**: Tailwind or plain CSS, dark theme (match existing dashboard.html aesthetic)
-- **No auth** — local tool, not deployed
+- **Styling**: plain CSS, dark background (#0a0a0a), monospace font, minimal — same feel as v1
 
-## MVP scope
+## Empty states
 
-1. API serving existing data (companies, pipes, events, predictions)
-2. Company selector + event timeline + pipe status panel
-3. Click event to time travel (pipe statuses update)
-4. Prediction card with Shkreli comparison
-5. Scorecard view with running accuracy
-
-## Not MVP
-
-- Financial snapshot CRUD (hardcode from known data initially)
-- Bucket derivation from pipe states (use prediction.category)
-- Cross-company comparison view
-- Animated anything
-- Mobile responsive
-- Deployment
+- No events for a company: "No events yet. Run a diagnosis."
+- No prediction: hide prediction card
+- No analyst call: hide analyst section of prediction card
+- No financial snapshot: hide runway card
+- Pipe with no events at selected time: show `—`
