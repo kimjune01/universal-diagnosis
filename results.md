@@ -2,14 +2,17 @@
 
 Updated as catalysts resolve. Published March 20, 2026.
 
-## Run 0: Retrospective (demonstration only)
+## Phase 1: Backtest (outcome known)
 
-| Company | Category | Direction | Catalyst | Shkreli | Outcome |
-|---------|----------|-----------|----------|---------|---------|
-| CAPR | dying_pivoted | PASS | HOPE-3 topline by 2025-12-31 | Bear | **HIT** — p=0.029 primary, p=0.041 LVEF |
-| QURE | dying_dying | PASS (topline) | AMT-130 topline by 2025-10-31 | Bull | **HIT** on topline (p=0.003), but FDA subsequently rejected external control methodology |
+| Company | Category | Direction | Catalyst | Shkreli | Merges agree? | Outcome |
+|---------|----------|-----------|----------|---------|---------------|---------|
+| CAPR | dying_pivoted | PASS | HOPE-3 topline by 2025-12-31 | Bear | Yes | **HIT** ✓ |
+| QURE | dying_dying | PASS (topline) | AMT-130 topline by 2025-10-31 | Bull | Yes | **HIT** ✓ |
+| SAVA | dying_dying | FAIL | RETHINK-ALZ Phase 3 by 2024-11-30 | Bear | Yes | **HIT** ✓ |
 
-## Run 1: Prospective (real predictions)
+**Phase 1 framework accuracy: 3/3 (100%).** Shkreli accuracy on same catalysts: 2/3 (67%) — wrong on CAPR.
+
+## Phase 2: Prospective (real predictions)
 
 | Company | Category | Direction | Catalyst | Window | Shkreli | Merges agree? | Outcome |
 |---------|----------|-----------|----------|--------|---------|---------------|---------|
@@ -32,5 +35,6 @@ Scoring rule: check the resolution source on window_end. If pass_condition is me
 - [SPRB diagnosis](diagnoses/SPRB.md) | [SOAP notes](notes/SPRB/)
 - [ATYR diagnosis](diagnoses/ATYR.md) | [SOAP notes](notes/ATYR/)
 - [INMB diagnosis](diagnoses/INMB.md) | [SOAP notes](notes/INMB/)
+- [SAVA diagnosis](diagnoses/SAVA.md) | [SOAP notes](notes/SAVA/)
 - [CAPR SOAP notes](notes/CAPR/) | [QURE SOAP notes](notes/QURE/)
 - [Blog post](https://june.kim/diagnosis-biotech)
