@@ -110,6 +110,17 @@ CREATE TABLE IF NOT EXISTS analyst_call (
 );
 
 -- Scorecard view
+-- Financial snapshots for runway calculation
+CREATE TABLE IF NOT EXISTS financial_snapshot (
+    id INTEGER PRIMARY KEY,
+    company_id INTEGER NOT NULL REFERENCES company(id),
+    cash INTEGER NOT NULL,
+    quarterly_burn INTEGER NOT NULL,
+    source_date TEXT NOT NULL,
+    source_url TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- Scorecard: only published predictions, one analyst call per prediction
 CREATE VIEW IF NOT EXISTS scorecard AS
 SELECT

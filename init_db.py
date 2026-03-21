@@ -73,6 +73,22 @@ def init():
             (company_id, pipe_id, desc, date, url, cat),
         )
 
+    # Seed financial snapshots (from agent findings)
+    financials = [
+        ("CAPR", 318100000, 26000000, "2025-12-31", "https://www.sec.gov/Archives/edgar/data/1133869/000110465926029580/capr-20251231x10k.htm"),
+        ("QURE", 622500000, 35000000, "2025-12-31", "https://www.globenewswire.com/news-release/2026/03/02/3247245/0/en/uniQure-Announces-2025-Financial-Results.html"),
+        ("SPRB", 48900000, 9000000, "2025-12-31", "https://investors.sprucebio.com/news-releases/news-release-details/spruce-biosciences-reports-full-year-2025-financial-results-and"),
+        ("ATYR", 80900000, 19000000, "2025-12-31", "https://www.globenewswire.com/news-release/2026/03/05/3250634/0/en/aTyr-Pharma-Announces-Fourth-Quarter-and-Full-Year-2025-Results.html"),
+        ("INMB", 27700000, 6500000, "2025-09-30", "https://www.stocktitan.net/sec-filings/INMB/10-q-inmune-bio-inc-quarterly-earnings-report-623008e8f203.html"),
+    ]
+
+    for ticker, cash, burn, date, url in financials:
+        cid = db.execute("SELECT id FROM company WHERE ticker = ?", (ticker,)).fetchone()[0]
+        db.execute(
+            "INSERT INTO financial_snapshot (company_id, cash, quarterly_burn, source_date, source_url) VALUES (?, ?, ?, ?, ?)",
+            (cid, cash, burn, date, url),
+        )
+
     db.commit()
     print(f"Database initialized at {DB_PATH}")
     print(f"  {db.execute('SELECT count(*) FROM company').fetchone()[0]} companies")
