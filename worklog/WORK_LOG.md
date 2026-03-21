@@ -94,3 +94,25 @@ Key discussion points before shipping:
 ### 00:30 — Phase 1 discovery started
 
 Phase 1 discovery started. Initial search found ~8-10 qualifying Shkreli post-prison biotech positions (May 2022-Dec 2025). Five already in pilot (CAPR, QURE, SPRB, ATYR, INMB). New candidates: SAVA (short Nov 2024, Phase 3 failed, stock -86% — clear add), GALT (short Dec 2024, needs research), AVXL (excluded — "don't know when" fails position definition rule #2). Pool is smaller than the 20-30 estimated in prereg. Per prereg rules: discovery must be exhaustive before freezing the list. Need deeper search of X archive, YouTube, interviews next session. No processing until list is frozen.
+
+### 01:15 — Phase 1 complete, three preregs, session wrap
+
+**Phase 1 done**: SAVA processed (dying_dying, FAIL, both merges agree). Phase 1 scorecard: framework 3/3 (100%), Shkreli 2/3 (67%). Framework beat Shkreli on CAPR — the one disagreement.
+
+**Phase 1 results written**: phase1-results.md documents 3/3 with honest caveats (N=3, retrospective, snapshot arm still owed for QURE/SAVA, no statistical significance at this N).
+
+**Market prereg drafted then deferred**: tested framework vs market on direction and vol. Codex found 6 blockers (statistical design broken, benchmark too discretionary, horizon mismatch, grouping variable not operationalized, catalyst definitions inconsistent, sample too small). Blockers logged in the doc. Needs options expertise we don't have yet.
+
+**Stratified prereg drafted**: the real experiment. 2×2 balanced sample (success/failure × high/low hype), N=100, three hypotheses:
+- H1: framework accuracy > 50% on balanced sample
+- H2: hype × prediction interaction (framework more accurate on famous stocks)
+- H3: broken read_outcomes → larger realized moves (vol mispricing, properly specified)
+
+User decision: direction first, sophistication later. Stock move direction on catalyst day is sufficient — no options data needed for H1/H2. Hype score (social mentions, analyst count, volume) as the moderator variable.
+
+**Three preregs now active**:
+1. Shkreli (active, Phase 2 live): framework vs one analyst, N grows organically
+2. Market (deferred): framework vs market-implied, needs fixing
+3. Stratified (designed): 2×2 balanced, N=100, the real test
+
+**Session total**: designed a prediction engine, diagnosed 6 companies, published 3 live predictions, built a dashboard, wrote a blog post, ran 7 rounds of codex review on the prereg, proved 3/3 on Phase 1, and designed two more experiments. In one session.
