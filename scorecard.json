@@ -1,0 +1,54 @@
+{
+  "predictions": [
+    {
+      "ticker": "CAPR",
+      "run": "run0",
+      "category": "dying_pivoted",
+      "direction": "pass",
+      "catalyst": "HOPE-3 Phase 3 topline",
+      "window_end": "2025-12-31",
+      "analyst_direction": "fail",
+      "outcome": "hit"
+    },
+    {
+      "ticker": "QURE",
+      "run": "run0",
+      "category": "dying_dying",
+      "direction": "pass",
+      "catalyst": "AMT-130 topline",
+      "window_end": "2025-10-31",
+      "analyst_direction": "pass",
+      "outcome": "hit"
+    },
+    {
+      "ticker": "SPRB",
+      "run": "run1",
+      "category": "dying_pivoted",
+      "direction": "pass",
+      "catalyst": "BLA submission for TA-ERT",
+      "window_end": "2026-12-31",
+      "analyst_direction": "pass",
+      "outcome": "pending"
+    },
+    {
+      "ticker": "ATYR",
+      "run": "run1",
+      "category": "dying_pivoted",
+      "direction": "pass",
+      "catalyst": "New sarcoidosis trial announced",
+      "window_end": "2026-09-30",
+      "analyst_direction": "fail",
+      "outcome": "pending"
+    },
+    {
+      "ticker": "INMB",
+      "run": "run1",
+      "category": "dying_pivoted",
+      "direction": "fail",
+      "catalyst": "CORDStrom MAA to UK MHRA",
+      "window_end": "2026-09-30",
+      "analyst_direction": "fail",
+      "outcome": "pending"
+    }
+  ]
+}

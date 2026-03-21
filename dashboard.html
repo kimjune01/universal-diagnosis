@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universal Diagnosis — Live Scorecard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'SF Mono', 'Menlo', monospace; background: #0a0a0a; color: #e0e0e0; padding: 2rem; }
+  h1 { font-size: 1.4rem; margin-bottom: 0.5rem; color: #fff; }
+  .subtitle { color: #666; margin-bottom: 2rem; font-size: 0.85rem; }
+  .stats { display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .stat { background: #141414; border: 1px solid #222; border-radius: 8px; padding: 1.2rem 1.6rem; min-width: 140px; }
+  .stat-label { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.1em; }
+  .stat-value { font-size: 2rem; font-weight: bold; margin-top: 0.3rem; }
+  .stat-value.good { color: #4ade80; }
+  .stat-value.bad { color: #f87171; }
+  .stat-value.neutral { color: #fbbf24; }
+  .stat-value.dim { color: #444; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+  th { text-align: left; font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.6rem 0.8rem; border-bottom: 1px solid #222; }
+  td { padding: 0.6rem 0.8rem; border-bottom: 1px solid #1a1a1a; font-size: 0.85rem; }
+  tr:hover { background: #141414; }
+  .hit { color: #4ade80; }
+  .miss { color: #f87171; }
+  .pending { color: #666; }
+  .void { color: #444; }
+  .pass { color: #4ade80; }
+  .fail { color: #f87171; }
+  .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+  .tag-run0 { background: #1a1a2e; color: #818cf8; }
+  .tag-run1 { background: #1a2e1a; color: #4ade80; }
+  .tag-backtest { background: #2e1a1a; color: #fbbf24; }
+  .p-value { font-size: 0.85rem; }
+  .p-value.sig { color: #4ade80; font-weight: bold; }
+  .p-value.nonsig { color: #666; }
+  .convergence { margin-top: 2rem; padding: 1.2rem; background: #141414; border: 1px solid #222; border-radius: 8px; }
+  .convergence h2 { font-size: 1rem; margin-bottom: 0.8rem; }
+  .bar { height: 6px; background: #222; border-radius: 3px; margin: 0.4rem 0; position: relative; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .bar-fill.good { background: #4ade80; }
+  .bar-fill.bad { background: #f87171; }
+  .bar-fill.neutral { background: #fbbf24; }
+  .meta { color: #444; font-size: 0.75rem; margin-top: 2rem; }
+  .meta a { color: #666; }
+  #status { font-size: 0.75rem; color: #333; margin-top: 0.5rem; }
+</style>
+</head>
+<body>
+
+<h1>Universal Diagnosis</h1>
+<p class="subtitle">Biotech pilot — head-to-head with Shkreli. <span id="status">Connecting...</span></p>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-label">Predictions</div>
+    <div class="stat-value dim" id="n-total">—</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Accuracy</div>
+    <div class="stat-value neutral" id="accuracy">—</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">vs Base Rate</div>
+    <div class="stat-value dim" id="p-value">—</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Resolved</div>
+    <div class="stat-value dim" id="n-resolved">—</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Pending</div>
+    <div class="stat-value dim" id="n-pending">—</div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Run</th>
+      <th>Category</th>
+      <th>Direction</th>
+      <th>Catalyst</th>
+      <th>Window</th>
+      <th>Shkreli</th>
+      <th>Outcome</th>
+    </tr>
+  </thead>
+  <tbody id="predictions"></tbody>
+</table>
+
+<div class="convergence" id="convergence" style="display:none;">
+  <h2>Convergence</h2>
+  <div id="convergence-content"></div>
+</div>
+
+<p class="meta">
+  Polling <code>scorecard.json</code> every 30s.
+  <a href="https://github.com/kimjune01/universal-diagnosis">GitHub</a> ·
+  <a href="https://june.kim/diagnosis-biotech">Blog post</a> ·
+  <a href="https://github.com/kimjune01/universal-diagnosis/blob/master/prereg.md">Pre-registration</a>
+</p>
+
+<script>
+const BASE_RATE = 0.50;
+
+function binomialPValue(hits, n, p0) {
+  // One-sided binomial test: P(X >= hits) under H0: p = p0
+  // Using normal approximation for n > 20
+  if (n < 1) return 1;
+  const pHat = hits / n;
+  const se = Math.sqrt(p0 * (1 - p0) / n);
+  if (se === 0) return 1;
+  const z = (pHat - p0) / se;
+  // Approximate one-sided p-value from z-score
+  const p = 0.5 * (1 - erf(z / Math.sqrt(2)));
+  return p;
+}
+
+function erf(x) {
+  const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+  const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+  const sign = x < 0 ? -1 : 1;
+  x = Math.abs(x);
+  const t = 1 / (1 + p * x);
+  const y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+  return sign * y;
+}
+
+function render(data) {
+  const rows = data.predictions || [];
+  const resolved = rows.filter(r => r.outcome === 'hit' || r.outcome === 'miss');
+  const hits = resolved.filter(r => r.outcome === 'hit').length;
+  const pending = rows.filter(r => r.outcome === 'pending').length;
+  const n = resolved.length;
+  const acc = n > 0 ? (100 * hits / n).toFixed(0) + '%' : '—';
+  const pVal = n > 0 ? binomialPValue(hits, n, BASE_RATE) : 1;
+
+  document.getElementById('n-total').textContent = rows.length;
+  document.getElementById('n-resolved').textContent = n;
+  document.getElementById('n-pending').textContent = pending;
+
+  const accEl = document.getElementById('accuracy');
+  accEl.textContent = acc;
+  accEl.className = 'stat-value ' + (n === 0 ? 'dim' : hits / n > BASE_RATE ? 'good' : hits / n < BASE_RATE ? 'bad' : 'neutral');
+
+  const pEl = document.getElementById('p-value');
+  if (n === 0) {
+    pEl.textContent = '—';
+    pEl.className = 'stat-value dim';
+  } else {
+    pEl.textContent = 'p=' + (pVal < 0.001 ? '<0.001' : pVal.toFixed(3));
+    pEl.className = 'stat-value ' + (pVal < 0.05 ? 'good' : 'dim');
+  }
+
+  const tbody = document.getElementById('predictions');
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td><strong>${r.ticker}</strong></td>
+      <td><span class="tag tag-${r.run}">${r.run}</span></td>
+      <td>${r.category}</td>
+      <td class="${r.direction}">${r.direction.toUpperCase()}</td>
+      <td>${r.catalyst}</td>
+      <td>${r.window_end}</td>
+      <td>${r.analyst_direction ? r.analyst_direction.toUpperCase() : '—'}</td>
+      <td class="${r.outcome}">${r.outcome.toUpperCase()}</td>
+    </tr>
+  `).join('');
+
+  // Convergence bar (only if backtest data exists)
+  if (n >= 10) {
+    const conv = document.getElementById('convergence');
+    conv.style.display = 'block';
+    const pct = (100 * hits / n).toFixed(1);
+    const barClass = hits / n > BASE_RATE ? 'good' : hits / n < BASE_RATE ? 'bad' : 'neutral';
+    document.getElementById('convergence-content').innerHTML = `
+      <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:#666;">
+        <span>Base rate: ${(100*BASE_RATE).toFixed(0)}%</span>
+        <span>Framework: ${pct}% (${hits}/${n})</span>
+      </div>
+      <div class="bar"><div class="bar-fill ${barClass}" style="width:${pct}%"></div></div>
+      <div class="p-value ${pVal < 0.05 ? 'sig' : 'nonsig'}" style="margin-top:0.5rem;">
+        ${pVal < 0.05 ? '✓ Significant' : 'Not yet significant'} at p=${pVal < 0.001 ? '<0.001' : pVal.toFixed(3)} (N=${n})
+      </div>
+    `;
+  }
+
+  document.getElementById('status').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+}
+
+async function poll() {
+  try {
+    const res = await fetch('scorecard.json?' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      render(data);
+    }
+  } catch (e) {
+    document.getElementById('status').textContent = 'Offline — using last data';
+  }
+}
+
+// Also try to load from static file on first load
+poll();
+setInterval(poll, 30000);
+</script>
+</body>
+</html>
