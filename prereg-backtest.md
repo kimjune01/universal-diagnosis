@@ -1,6 +1,6 @@
-# Pre-registration: Ongoing Scorecard
+# Pre-registration: Backtest + Ongoing Scorecard
 
-**Status**: Active. N grows as Shkreli takes public positions.
+**Status**: Active. Two phases: historical backtest (2020-2025), then ongoing as Shkreli takes new positions.
 
 ## Research question
 
@@ -8,7 +8,21 @@ Does a seven-pipe, one-level temporal graph of a biotech company's learning loop
 
 ## Design
 
-Follow Shkreli's public biotech positions as they appear. Each company gets **three locked predictions** before the catalyst:
+Two phases, same method, same scoring.
+
+### Phase 1: Historical backtest (2020-2025)
+
+Pull every public biotech position Shkreli took from his release (May 2022) through December 2025. Build temporal graphs from records dated *before* each catalyst. Predict and score against known outcomes. This gives us N=20-30 immediately and tests the hypothesis before any new positions are needed.
+
+**Critical constraint**: the temporal graph for each company must be built strictly from records with archival dates before the catalyst. No look-ahead. The outcome is known to us but the graph must not contain it.
+
+### Phase 2: Ongoing scorecard (2026+)
+
+Follow Shkreli's new positions as they appear. Same method as Phase 1 but prospective — predict before the catalyst, score after.
+
+### Both phases
+
+Each company gets **three locked predictions** before the catalyst (or before scoring, for Phase 1):
 
 1. **Temporal-graph prediction** — full framework with event ordering, trajectory category, transition analysis
 2. **Snapshot-only prediction** — same seven pipes, same evidence, but only latest status per pipe (no trajectory, no recurrence check, no transition history). Category derived from current state, not trajectory.
@@ -31,24 +45,31 @@ Companies diagnosed with broken read_outcomes exhibit higher realized-to-implied
 ## Sample
 
 ### Selection rule
-Every biotech company where Shkreli takes a public, timestamped, directional position (long/short/bull/bear) gets diagnosed. No cherry-picking. If he tweets it, we run it.
+Every biotech company where Shkreli took or takes a public, timestamped, directional position (long/short/bull/bear) gets diagnosed. No cherry-picking. If he tweeted it, we run it.
+
+### Phase 1 discovery
+Search Shkreli's public record (X/Twitter, YouTube, interviews, financial media coverage) from May 2022 (prison release) through December 2025 for every biotech position with a resolvable catalyst. Archive each source URL and screenshot. This discovery is done once, before any diagnosis begins. The full list is frozen before processing any company.
 
 ### Inclusion criteria
 - Shkreli has a public, timestamped, directional position (X post, interview, report)
-- Company has a binary catalyst within 12 months (trial readout, FDA action, regulatory filing)
+- Company has a binary catalyst within 12 months of the position (trial readout, FDA action, regulatory filing)
 - At least 3 dated public records exist before the catalyst (enough for a temporal graph)
-- Listed options available at time of catalyst (Hypothesis 2 only)
+- Catalyst has resolved (Phase 1) or will resolve within 12 months (Phase 2)
+- Listed options available at time of catalyst (Hypothesis 3 only)
 
 ### Exclusion criteria
 - Non-biotech positions (computing, crypto, etc.)
 - Positions without a clear directional call (vague commentary, "interesting company")
 - Companies with fewer than 3 dated public records
+- Catalysts that are ambiguous or unresolvable (no clear binary outcome)
 
-### Stopping rule
-If Shkreli stops covering a stock (goes silent, position closed, company acquired or delisted), the prediction resolves on whatever ground truth exists at that point or is voided if no catalyst occurred within the window. We don't keep diagnosing companies he's moved on from.
+### Stopping rule (Phase 2 only)
+If Shkreli stops covering a stock, the prediction resolves on whatever ground truth exists or is voided if no catalyst occurred within the window.
 
 ### Expected sample size
-Shkreli takes 5-10 public biotech positions per year. At that rate, N=10 within 1-2 years. N=30 within 3-5 years.
+- **Phase 1**: Shkreli has been publicly active on biotech since mid-2022. Estimated 20-30 resolvable positions. All outcomes known.
+- **Phase 2**: 5-10 new positions per year. N grows organically.
+- **Combined**: N=25-40 at launch of Phase 2, growing from there.
 
 ## Data sources
 
@@ -148,9 +169,11 @@ Every event in the temporal graph has a `source_url` pointing to the public reco
 ## Known biases
 
 1. **Selection bias**: we only diagnose companies Shkreli covers. His picks skew toward controversial, high-volatility names. Not a random sample of biotech.
-2. **Look-ahead bias**: temporal graph must be built strictly from records dated before the catalyst. Enforceable because every event has a source_date.
-3. **Classification bias**: the framework author (us) also runs the diagnosis. Mitigated by mechanical scoring and audit trail.
-4. **Small N**: significance accumulates slowly. The dashboard shows convergence but may never reach p < 0.05. That's a result, not a failure.
+2. **Look-ahead bias (Phase 1)**: we know the outcomes. The temporal graph must be built strictly from records with archival dates before the catalyst. Enforceable because every event has a source_date. But the diagnostician (us) knows the answer, which may unconsciously influence status labeling. Mitigated by: (a) mechanical scoring, (b) snapshot-only arm as control (same diagnostician bias applies to both, so the temporal-vs-snapshot comparison is fair even if both are biased).
+3. **Classification bias**: the framework author (us) also runs the diagnosis. Mitigated by mechanical scoring, audit trail, and the snapshot-only arm.
+4. **Hindsight in Phase 1**: Shkreli's historical positions are already scored by the market. We might unconsciously select positions where the framework would look good. Mitigated by: freeze the full list of positions before diagnosing any company. Process all of them, not a subset.
+5. **Small N**: Phase 1 gives N=20-30, which is borderline for McNemar's test. The dashboard shows convergence. Phase 2 adds power over time.
+6. **LLM knowledge contamination (Phase 1)**: the LLM agents may have been trained on data that includes the outcomes of 2020-2025 catalysts. The agents are instructed to report events with archival dates and evidence from public records, not to predict outcomes. But latent knowledge of outcomes could influence status labeling. This bias affects all three arms equally if using the same LLM, so the temporal-vs-snapshot comparison remains valid.
 
 ## Success criterion
 
